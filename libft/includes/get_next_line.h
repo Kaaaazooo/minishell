@@ -21,9 +21,9 @@
 #  define BUF_SIZE 8
 # endif
 
-int			get_next_line(int fd, char **line);
+int		get_next_line(int fd, char **line);
 void		*ft_cpy(void *dst, const void *src, size_t n);
-int			has_nl(char *str);
+int		has_nl(char *str);
 char		*ft_cut(char *s1);
 char		*ft_join(char *s1, char *s2);
 char		*to_next(int fd, char **remain, char *buf, int ret);
