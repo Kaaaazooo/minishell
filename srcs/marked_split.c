@@ -18,7 +18,7 @@ static size_t	count(t_line_char *s, char c)
 	return (count);
 }
 
-static char	**free_strs(char **strs, int j)
+static t_line_char	**free_lctabs(t_line_char **strs, int j)
 {
 	while (j >= 0)
 		free(strs[j--]);
@@ -26,32 +26,30 @@ static char	**free_strs(char **strs, int j)
 	return (NULL);
 }
 
-char	*lcndup(t_line_char *s, int n)
+t_line_char	*lccpy(t_line_char *dst, t_line_char *src, int n)
 {
-	char	*new;
 	int	i;
 
-	new = ft_calloc(n + 1, 1);
-	if (new == NULL)
+	if (!dst || !src)
 		return (NULL);
 	i = 0;
-	while (i < n)
+	while (src[i].c && i < n)
 	{
-		new[i] = s[i].c;
+		dst[i] = src[i];
 		++i;
 	}
-	return (new);
+	return (dst);
 }
 
-char	**line_split(t_line_char *s, char c)
+t_line_char	**marked_split(t_line_char *s, char c)
 {
-	char		**res;
+	t_line_char	**res;
 	size_t		i;
 	size_t		j;
 
 	if (!s)
 		return (NULL);
-	if (!(res = malloc(sizeof(char*) * (count(s, c) + 1))))
+	if (!(res = malloc(sizeof(*res) * (count(s, c) + 1))))
 		return (NULL);
 	j = 0;
 	while (s->c)
@@ -65,8 +63,10 @@ char	**line_split(t_line_char *s, char c)
 						s[i].flag & M_D_QUOTED ||
 						s[i].flag & M_ESCAPED))
 				i++;
-			if (!(res[j++] = lcndup(s, i)))
-				return (free_strs(res, (int)(j - 1)));
+			if (!(res[j] = calloc(sizeof(**res), i + 1)))
+				return (free_lctabs(res, (int)(j)));
+			res[j] = lccpy(res[j], s, i);
+			++j;
 			s += i;
 		}
 	}

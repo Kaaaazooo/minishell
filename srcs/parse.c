@@ -38,78 +38,6 @@ void	mark_escape(t_line_char **marked, char *line, int i)
 	}
 }
 
-t_line_char	*expand_param(t_line_char **marked, char *line, int *i, int n)
-{
-	t_line_char	*new;
-	char		*env;
-	char		c;
-	int		len;
-
-	c = line[n];
-	line[n] = 0;
-	env = getenv(line);
-	line[n] = c;
-	//line[n] = (*marked)[i + n].c;
-	len = 0;
-	while ((*marked)[len].c)
-		++len;
-	if (env)
-		new = calloc(sizeof(*new) , len + ft_strlen(env) - n + 1);
-	else
-		new = calloc(sizeof(*new) , len - n + 1);
-	if (new == NULL)
-		return (NULL);
-	len = 0;
-	while (len < *i)
-	{
-		new[len] = (*marked)[len];
-		++len;
-	}
-	while (env && *env)
-	{
-		new[*i].flag = M_ENV_VAR;
-		new[(*i)++].c = *env++;
-	}
-	n += len + 1;
-	while ((*marked)[n].c)
-		new[i++] = (*marked)[n++];
-	for (int x = 0 ; new[x].c ; x++)
-		printf("new[%d] = %c | %d\n", x, new[x].c, new[x].flag);
-	free(*marked);
-	return (new);
-}
-
-void	mark_env(t_line_char **marked, char *line, int i)
-{
-	int	n;
-
-	while ((*marked)[i].c)
-	{
-		if ((*marked)[i].c == '$' && !((*marked)[i].flag & M_QUOTED) &&
-				!((*marked)[i].flag & M_ESCAPED))
-		{
-			n = 0;
-			printf("pre av : line [%s]\n", line);
-			++line;
-			printf("av : line [%s] | i = %d\n", line, i);
-			if (ft_isdigit(*line))
-				++n;
-			else
-				while (ft_isalnum(line[n]) || line[n] == '_')
-					++n;
-			*marked = expand_param(marked, line, &i, n);
-			line += n;
-			printf("ap : line [%s] | i = %d\n", line, i);
-//			i += n;
-		}
-		else
-		{
-			++i;
-			++line;
-		}
-	}
-}
-
 t_line_char	*mark_line(char *line)
 {
 	t_line_char	*marked;
@@ -132,24 +60,21 @@ t_line_char	*mark_line(char *line)
 			mark_escape(&marked, line, i);
 		marked[i++].c = *line++;
 	}
-	mark_env(&marked, line - i, 0);
 	return (marked);
 }
 
-char	**parse(char **line)
+t_line_char	**parse(char **line)
 {
 	t_line_char	*marked;
-	char		**cmd;
+	t_line_char	**cmd;
 
 	cmd = NULL;
 	marked = mark_line(*line);
 	if (marked == NULL)
 		return (NULL);
 	free(*line);
-	cmd = line_split(marked, ';');
-	for (int i = 0 ; cmd[i] ; i++)
-		printf("cmd[%d] = [%s]\n", i, cmd[i]);
 	*line = NULL;
+	cmd = marked_split(marked, ';');
 	free(marked);
 	return (cmd);
 }

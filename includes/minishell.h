@@ -55,17 +55,22 @@ typedef struct	s_bash
 	char	**env;
 }		t_bash;
 
-int	echo(char *str);
-int	ft_cd(char *path);
-int	ft_pwd(void);
+int		echo(char *str);
+int		ft_cd(char *path);
+int		ft_pwd(void);
 
-int	char_in_str(char c, char *str);
-char	**line_split(t_line_char *s, char c);
+int		char_in_str(char c, char *str);
+char		**line_split(t_line_char *s, char c);
+char		*lcndup(t_line_char *s, int n);
 
-int	skip_quoted(char *str);
+t_line_char	**marked_split(t_line_char *s, char c);
 
-void	put_env(char *str);
+int		skip_quoted(char *str);
 
-char	**parse(char **line);
+void		mark_env(t_line_char **marked);
+
+t_line_char	**parse(char **line);
+
+char		*lcs_to_strs(t_line_char *marked);
 
 #endif

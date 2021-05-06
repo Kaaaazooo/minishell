@@ -9,7 +9,8 @@ LDFLAGS = -L $(LIBFT_P) -lft
 
 BUILTINS = $(addprefix builtins/, echo.c ft_pwd.c ft_cd.c)
 
-SRCS = $(addprefix srcs/, main.c line_split.c parse.c)
+SRCS = $(addprefix srcs/, main.c parse.c expand_param.c lc_to_str.c \
+	line_split.c marked_split.c)
 
 CC = gcc
 
