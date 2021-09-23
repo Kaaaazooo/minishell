@@ -1,16 +1,16 @@
 NAME = minishell
 
-LIBFT_P = libft
 HEADER = includes
 
-OPTIONS = -I $(HEADER) -I $(LIBFT_P)/includes
+OPTIONS = -I $(HEADER)
+LDFLAGS = -L /Users/sabrugie/.brew/opt/readline -lreadline
 CFLAGS = -Wall -Werror -Wextra $(OPTIONS)
-LDFLAGS = -L $(LIBFT_P) -lft
 
-BUILTINS = $(addprefix builtins/, echo.c ft_pwd.c ft_cd.c)
+UTILS = $(addprefix utils/, ft_strlen.c ft_calloc.c)
+PARSE = $(addprefix parse/, parse.c marked_split.c line_split.c)
+SIG_FUNC = $(addprefix sig_func/, sig_func.c)
 
-SRCS = $(addprefix srcs/, main.c parse.c expand_param.c lc_to_str.c \
-	line_split.c marked_split.c)
+SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) $(SIG_FUNC) main.c)
 
 CC = gcc
 
@@ -19,15 +19,12 @@ all: $(NAME)
 OBJS = $(SRCS:.c=.o)
 
 $(NAME): $(OBJS)
-	make -C $(LIBFT_P)
 	$(CC) $(CFLAGS) -o ./$(NAME) $(OBJS) $(LDFLAGS)
 
 clean:
-	make -C $(LIBFT_P) clean
 	rm -rf $(OBJS)
 
 fclean: clean
-	rm -rf $(LIBFT_P)/libft.a
 	rm -rf $(NAME)
 
 re: fclean all

@@ -1,17 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/09/23 12:10:31 by sabrugie         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
+# include <signal.h>
+# include <errno.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
-#include <sys/types.h>
-#include <sys/errno.h>
-#include <sys/wait.h>
-
-#include "libft.h"
+# include "utils.h"
+# include "sig_func.h"
 
 # define M_QUOTED 1
 # define M_D_QUOTED 2
@@ -23,54 +35,18 @@
 # define M_ENVNAME 128
 # define M_ENVVAR 256
 
-typedef struct	s_line_char
+typedef struct s_line_character
 {
-	char		c;
-	uint16_t	flag;
-}		t_line_char;
+	char	c;
+	uint8_t	flag;
+}				t_line_char;
 
-typedef struct	s_word_desc
-{
-	char	*word;
-	int	flags;
-}		t_w_desc;
+t_line_char		**parse(char *line);
 
-typedef struct	s_quote_addresses
-{
-	char				*start;
-	char				*end;
-	struct s_quote_addresses	*next;
-}		t_quotes;
+char			**line_split(char **res, t_line_char *s, char c);
+t_line_char		**marked_split(t_line_char ***res, t_line_char *s, char c);
+size_t			count(t_line_char *s, char c);
 
-typedef struct	s_command_list
-{
-	struct s_command_list	*next;
-	char			cmd[255];
-	int			ac;
-	char			**args;
-}		t_cmd_lst;
-
-typedef struct	s_bash
-{
-	char	**env;
-}		t_bash;
-
-int		echo(char *str);
-int		ft_cd(char *path);
-int		ft_pwd(void);
-
-int		char_in_str(char c, char *str);
-char		**line_split(t_line_char *s, char c);
-char		*lcndup(t_line_char *s, int n);
-
-t_line_char	**marked_split(t_line_char *s, char c);
-
-int		skip_quoted(char *str);
-
-void		mark_env(t_line_char **marked);
-
-t_line_char	**parse(char **line);
-
-char		*lcs_to_strs(t_line_char *marked);
+char			*lcndup(t_line_char *s, int n);
 
 #endif
