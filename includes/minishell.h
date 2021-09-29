@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/23 12:10:31 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/09/27 18:00:54 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,24 @@
 # define M_QU_END 64
 # define M_ENVNAME 128
 # define M_ENVVAR 256
+# define M_CONTROL 512
 
 typedef struct s_line_character
 {
-	char	c;
-	uint8_t	flag;
-}				t_line_char;
+	char		c;
+	uint16_t	flag;
+}			t_line_char;
+
+typedef struct s_line_string
+{
+	t_line_char	*str;
+	t_line_char	*redir;
+}			t_lstr;
+
+typedef struct s_command
+{
+	char	*str;
+}			t_cmd;
 
 t_line_char		**parse(char *line);
 

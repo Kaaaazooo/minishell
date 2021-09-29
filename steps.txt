@@ -1,0 +1,52 @@
+#1 : readline to buf
+
+
+[buf]
+
+
+#2 split buf to marked line (flags for tokens), save redirections info
+
+
+---------------------------------------------------------
+|	struct s_line_string								|
+|	t_line_char	*str;	|	t_line_char	*redir;			|
+---------------------------------------------------------
+
+---------------------------------------------------------
+|	1	[cmd + args]		[control operator + info]	|
+|	...	[cmd + args]		[control operator + info]	|
+|	n	[cmd + args]		[control operator + info]	|
+---------------------------------------------------------
+
+
+#3 split line to words
+
+
+---------------------------------------------------------
+|	1					[control operator + info]		|
+|		- [cmd]											|
+|		- [arg 1]										|
+|		- [arg ...]										|
+|		- [arg n]										|
+---------------------------------------------------------
+
+...
+
+---------------------------------------------------------
+|	n					[control operator + info]		|
+|		- [cmd]											|
+|		- [arg 1]										|
+|		- [arg ...]										|
+|		- [arg n]										|
+---------------------------------------------------------
+
+
+#4 expand variables, remove quotes + escape
+
+
+
+#5 perform redirections in child process
+
+
+
+#6 execute command

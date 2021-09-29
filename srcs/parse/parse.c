@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:59:15 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/23 12:11:53 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/09/29 17:12:44 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,33 @@ void	mark_escape(t_line_char **marked, char *line, int i)
 	}
 }
 
+void	mark_control(t_line_char **marked, char *line, int i)
+{
+	char	c;
+
+	c = *line;
+	(*marked)[i].flag |= M_CONTROL;
+	(*marked)[i++].c = *line++;
+	if (c == '|')
+		return ;
+	if (*line == c)
+	{
+		(*marked)[i].flag |= M_CONTROL;
+		(*marked)[i++].c = *line++;
+	}
+	while (*line == ' ' || (*marked)[i].flag & M_QU_START)
+	{
+		(*marked)[i].flag |= M_CONTROL;
+		(*marked)[i++].c = *line++;
+	}
+	while (*line != ' ' || (*marked)[i].flag & M_QUOTED
+		|| (*marked)[i].flag & M_D_QUOTED)
+	{
+		(*marked)[i].flag |= M_CONTROL;
+		(*marked)[i++].c = *line++;
+	}
+}
+
 t_line_char	*mark_line(char *line)
 {
 	t_line_char	*marked;
@@ -78,9 +105,18 @@ t_line_char	*mark_line(char *line)
 t_line_char	**parse(char *line)
 {
 	t_line_char	*marked;
+	int			i;
 	t_line_char	**cmd;
 
 	marked = mark_line(line);
+	i = 0;
+	while (*line)
+	{
+		if (!((marked)[i].flag & M_QUOTED) && !((marked)[i].flag & M_ESCAPED))
+			if (*line == '|' || *line == '<' || *line == '>')
+				mark_control(&marked, line, i);
+		marked[i++].c = *line++;
+	}
 	if (marked == NULL)
 		return (NULL);
 	cmd = ft_calloc((count(marked, ';') + 1), sizeof(*cmd));

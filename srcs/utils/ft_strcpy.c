@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   ft_strcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/22 16:08:32 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/27 14:14:14 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/09/27 14:12:08 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/09/29 17:17:39 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#include "utils.h"
 
-# include <unistd.h>
-# include <stdlib.h>
+char	*ft_strcpy(char *dst, const char *src)
+{
+	unsigned int	i;
 
-size_t	ft_strlen(char *str);
-void	*ft_calloc(size_t count, size_t size);
-char	*ft_strcpy(char *dst, const char *src);
-
-#endif
+	i = 0;
+	while (src[i])
+	{
+		dst[i] = src[i];
+		++i;
+	}
+	dst[i] = 0;
+	return (dst);
+}

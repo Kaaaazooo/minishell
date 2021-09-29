@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/23 13:15:39 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/09/29 17:22:08 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 int	main(void)
 {
 	char		*buf;
-	t_line_char	**marked;	
+	t_line_char	**marked;
+	int			i;
 
 	while (1)
 	{
@@ -29,17 +30,26 @@ int	main(void)
 			continue ;
 		}
 		add_history(buf);
+		if (!strcmp(buf, "exit"))
+			break ;
+		i = 0;
 		marked = parse(buf);
-		for (int i = 0; marked[i]; i++)
-			free(marked[i]);
+		while (marked[i])
+			free(marked[i++]);
 		free(marked);
 		free(buf);
 	}
+	free(buf);
 	return (0);
 }
-/*		for (int j = 0; marked[i][j].c; j++)
-**			printf("marked[%d][%d].c = [%c] | %d\n",
-**				i, j, marked[i][j].c, marked[i][j].flag);
-**		printf("\n");
-*/
+//	system("leaks minishell");
 //	signal(SIGINT, SIG_IGN);
+/*		for (int i = 0; marked[i]; i++)
+**		{
+**			for (int j = 0; marked[i][j].c; j++)
+**				printf("marked[%d][%d].c = [%c] | %d\n",
+**						i, j, marked[i][j].c, marked[i][j].flag);
+**			printf("\n");
+**			free(marked[i]);
+**		}
+*/
