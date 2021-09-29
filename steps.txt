@@ -8,14 +8,14 @@
 
 
 ---------------------------------------------------------
-|	struct s_line_string								|
-|	t_line_char	*str;	|	t_line_char	*redir;			|
+|	struct s_line_string								                  |
+|	t_line_char	*str;	|	t_line_char	*redir;			          |
 ---------------------------------------------------------
 
 ---------------------------------------------------------
-|	1	[cmd + args]		[control operator + info]	|
-|	...	[cmd + args]		[control operator + info]	|
-|	n	[cmd + args]		[control operator + info]	|
+|	1	[cmd + args]		[control operator + info]	          |
+|	...	[cmd + args]		[control operator + info]	        |
+|	n	[cmd + args]		[control operator + info]	          |
 ---------------------------------------------------------
 
 
@@ -23,21 +23,21 @@
 
 
 ---------------------------------------------------------
-|	1					[control operator + info]		|
-|		- [cmd]											|
-|		- [arg 1]										|
-|		- [arg ...]										|
-|		- [arg n]										|
+|	1					[control operator + info]		                |
+|		- [cmd]										                        	|
+|		- [arg 1]									                        	|
+|		- [arg ...]									                      	|
+|		- [arg n]							                        			|
 ---------------------------------------------------------
 
 ...
 
 ---------------------------------------------------------
-|	n					[control operator + info]		|
-|		- [cmd]											|
-|		- [arg 1]										|
-|		- [arg ...]										|
-|		- [arg n]										|
+|	n					[control operator + info]	                	|
+|		- [cmd]										                        	|
+|		- [arg 1]									                        	|
+|		- [arg ...]							                      			|
+|		- [arg n]							                        			|
 ---------------------------------------------------------
 
 
