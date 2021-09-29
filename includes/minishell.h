@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/27 18:00:54 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/09/29 18:38:38 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct s_command
 }			t_cmd;
 
 t_line_char		**parse(char *line);
+void			trim_redir(t_line_char **marked);
 
 char			**line_split(char **res, t_line_char *s, char c);
 t_line_char		**marked_split(t_line_char ***res, t_line_char *s, char c);
