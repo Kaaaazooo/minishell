@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/29 18:38:38 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/09/30 17:21:17 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ typedef struct s_line_character
 
 typedef struct s_line_string
 {
-	t_line_char	*str;
-	t_line_char	*redir;
+	t_line_char	*lstr;
+	t_line_char	*control;
 }			t_lstr;
 
 typedef struct s_command
@@ -53,13 +53,14 @@ typedef struct s_command
 	char	*str;
 }			t_cmd;
 
-t_line_char		**parse(char *line);
-void			trim_redir(t_line_char **marked);
+t_line_char		*parse(char *line);
+t_lstr			*trim_redir(t_line_char *marked);
 
 char			**line_split(char **res, t_line_char *s, char c);
 t_line_char		**marked_split(t_line_char ***res, t_line_char *s, char c);
 size_t			count(t_line_char *s, char c);
 
 char			*lcndup(t_line_char *s, int n);
+t_line_char		*lccpy(t_line_char *dst, t_line_char *src, int n);
 
 #endif

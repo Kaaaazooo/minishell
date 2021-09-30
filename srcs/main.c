@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/29 18:39:09 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/09/30 16:35:34 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	main(void)
 {
 	char		*buf;
-	t_line_char	**marked;
+	t_line_char	*marked;
 
 	while (1)
 	{
@@ -33,21 +33,8 @@ int	main(void)
 			break ;
 		marked = parse(buf);
 		trim_redir(marked);
-		for (int i = 0; marked[i]; i++)
-		{
-			for (int j = 0; marked[i][j].c; j++)
-				printf("marked[%d][%d].c = [%c] | %d\n",
-						i, j, marked[i][j].c, marked[i][j].flag);
-			printf("\n");
-			free(marked[i]);
-		}
-	//	i = 0;
-	//	while (marked[i])
-	//	{
-	//		printf("av free\n");
-	//		free(marked[i++]);
-	//		printf("ap free\n");
-	//	}
+		for (int i = 0; marked[i].c; i++)
+			printf("marked[%d] = [%c] | %d\n", i, marked[i].c, marked[i].flag);
 		free(marked);
 		free(buf);
 	}
