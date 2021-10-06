@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/30 17:21:17 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/10/06 18:51:29 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,13 @@
 # define M_ENVVAR 256
 # define M_CONTROL 512
 
+# define BLANK 1
+# define GREAT 2
+# define G_GREAT 4
+# define LESS 8
+# define L_LESS 16
+# define PIPE 32
+
 typedef struct s_line_character
 {
 	char		c;
@@ -55,6 +62,7 @@ typedef struct s_command
 
 t_line_char		*parse(char *line);
 t_lstr			*trim_redir(t_line_char *marked);
+char			**split_word(char *buf);
 
 char			**line_split(char **res, t_line_char *s, char c);
 t_line_char		**marked_split(t_line_char ***res, t_line_char *s, char c);

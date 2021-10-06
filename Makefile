@@ -6,8 +6,8 @@ OPTIONS = -I $(HEADER)
 LDFLAGS = -L /Users/sabrugie/.brew/opt/readline -lreadline
 CFLAGS = -Wall -Werror -Wextra $(OPTIONS)
 
-UTILS = $(addprefix utils/, ft_strlen.c ft_calloc.c ft_strcpy.c)
-PARSE = $(addprefix parse/, parse.c marked_split.c line_split.c trim_redir.c)
+UTILS = $(addprefix utils/, ft_strlen.c ft_calloc.c ft_strcpy.c ft_strncmp.c)
+PARSE = $(addprefix parse/, parse.c marked_split.c line_split.c split_word.c)
 SIG_FUNC = $(addprefix sig_func/, sig_func.c)
 
 SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) $(SIG_FUNC) main.c)

@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/30 16:35:34 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/10/06 17:18:33 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 int	main(void)
 {
 	char		*buf;
-	t_line_char	*marked;
 
 	while (1)
 	{
@@ -31,15 +30,16 @@ int	main(void)
 		add_history(buf);
 		if (!strcmp(buf, "exit"))
 			break ;
-		marked = parse(buf);
-		trim_redir(marked);
-		for (int i = 0; marked[i].c; i++)
-			printf("marked[%d] = [%c] | %d\n", i, marked[i].c, marked[i].flag);
-		free(marked);
+		split_word(buf);
 		free(buf);
 	}
 	free(buf);
 	return (0);
 }
+//	t_line_char	*marked;
 //	system("leaks minishell");
 //	signal(SIGINT, SIG_IGN);
+//		marked = parse(buf);
+//		for (int i = 0; marked[i].c; i++)
+//			printf("marked[%d] = [%c] | %d\n", i, marked[i].c, marked[i].flag);
+//		free(marked);
