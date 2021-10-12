@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/06 18:51:29 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/10/12 17:02:29 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,6 @@
 # include "utils.h"
 # include "sig_func.h"
 
-# define M_QUOTED 1
-# define M_D_QUOTED 2
-# define M_ESCAPE 4
-# define M_ESCAPED 8
-# define M_ENV_VAR 16
-# define M_QU_START 32
-# define M_QU_END 64
-# define M_ENVNAME 128
-# define M_ENVVAR 256
-# define M_CONTROL 512
-
 # define BLANK 1
 # define GREAT 2
 # define G_GREAT 4
@@ -44,33 +33,18 @@
 # define L_LESS 16
 # define PIPE 32
 
-typedef struct s_line_character
-{
-	char		c;
-	uint16_t	flag;
-}			t_line_char;
-
-typedef struct s_line_string
-{
-	t_line_char	*lstr;
-	t_line_char	*control;
-}			t_lstr;
-
-typedef struct s_command
+typedef struct s_token
 {
 	char	*str;
-}			t_cmd;
+	uint8_t	flag;
+}				t_token;
 
-t_line_char		*parse(char *line);
-char			**split_word(char ***dst, char *s);
-uint32_t		count_words(char *buf);
+t_token		*parse(char *line);
+char		**split_word(char ***dst, char *s);
+uint32_t	count_words(char *buf);
+char		*quoted(char *buf, char **end_quote);
+uint8_t		is_metachar(char *str);
 
-char			**line_split(char **res, t_line_char *s, char c);
-char			**free_strs(char **strs, int j);
-t_line_char		**marked_split(t_line_char ***res, t_line_char *s, char c);
-size_t			count(t_line_char *s, char c);
-
-char			*lcndup(t_line_char *s, int n);
-t_line_char		*lccpy(t_line_char *dst, t_line_char *src, int n);
+char		**free_strs(char **strs, int j);
 
 #endif

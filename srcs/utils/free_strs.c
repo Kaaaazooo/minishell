@@ -1,13 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   trim_redir.c                                       :+:      :+:    :+:   */
+/*   free_strs.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/29 18:09:13 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/06 16:06:54 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/10/12 15:45:05 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "utils.h"
+
+char	**free_strs(char **strs, int j)
+{
+	while (j >= 0)
+		free(strs[j--]);
+	free(strs);
+	return (NULL);
+}

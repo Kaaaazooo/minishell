@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/06 16:14:47 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/06 19:10:16 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/10/12 18:21:09 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ char	*quoted(char *buf, char **end_quote)
 	if (*end_quote >= buf)
 		return (*end_quote);
 	c = *buf++;
-	while (*buf != c)
+	while (*buf && *buf != c)
 		++buf;
 	*end_quote = buf;
 	return (*end_quote);
@@ -49,11 +49,11 @@ uint32_t	count_words(char *buf)
 	uint32_t	count;
 	char		*end_quote;
 
-	end_quote = buf;
+	end_quote = NULL;
 	count = 0;
 	while (*buf)
 	{
-		while (*buf && is_metachar(buf) && buf >= end_quote)
+		while (*buf && is_metachar(buf) && buf > end_quote)
 		{
 			if (buf >= end_quote)
 			{
@@ -78,7 +78,7 @@ int	incr_index(char *s, char **end_quote, uint32_t *i)
 	int	ret;
 
 	ret = 0;
-	if (s >= quoted(s, end_quote))
+	if (s > quoted(s, end_quote))
 	{
 		if (is_metachar(s) == G_GREAT || is_metachar(s) == L_LESS)
 			ret = 2;
@@ -100,7 +100,7 @@ char	**split_word(char ***dst, char *s)
 	char		*end_quote;
 
 	j = 0;
-	end_quote = s;
+	end_quote = NULL;
 	while (*s)
 	{
 		while (*s && s > quoted(s, &end_quote) && is_metachar(s) == BLANK)

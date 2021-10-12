@@ -6,112 +6,97 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:59:15 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/30 16:36:35 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/10/12 19:04:39 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	mark_quoted(t_line_char **marked, char *line, int i, uint8_t flag)
+int	expand(char **str, size_t j)
 {
-	(*marked)[i].c = *(line)++;
-	if (!((*marked)[i].flag & M_QUOTED) &&
-			!((*marked)[i].flag & M_D_QUOTED) &&
-			!((*marked)[i].flag & M_ESCAPED))
-		(*marked)[i++].flag |= M_QU_START;
-	while (*line && ((flag & M_D_QUOTED && *line != '\"')
-			|| (flag & M_QUOTED && *line != '\'')
-			|| (*marked)[i].flag & M_ESCAPED))
-	{
-		(*marked)[i].c = *(line++);
-		if (!((*marked)[i].flag & M_QUOTED) &&
-				!((*marked)[i].flag & M_D_QUOTED))
-			(*marked)[i++].flag |= flag;
-	}
-	(*marked)[i].c = *(line)++;
-	if (!((*marked)[i].flag & M_QUOTED) &&
-			!((*marked)[i].flag & M_D_QUOTED) &&
-			!((*marked)[i].flag & M_ESCAPED))
-		(*marked)[i++].flag |= M_QU_END;
-}
+	size_t	i;
+	char	tmp;
+	char	*env;
+	char	*new;
 
-void	mark_escape(t_line_char **marked, char *line, int i)
-{
-	if (!((*marked)[i].flag & M_QUOTED) && !((*marked)[i].flag & M_ESCAPED))
-	{
-		if (!((*marked)[i].flag & M_D_QUOTED) || line[1] == '$' ||
-				line[1] == '\"' || line[1] == '\\')
-		{
-			(*marked)[i].flag |= M_ESCAPE;
-			(*marked)[i++].c = *line++;
-			(*marked)[i].flag |= M_ESCAPED;
-			(*marked)[i++].c = *line++;
-		}
-	}
-}
-
-void	mark_control(t_line_char **marked, char *line, int i)
-{
-	char	c;
-
-	c = *line;
-	(*marked)[i].flag |= M_CONTROL;
-	(*marked)[i++].c = *line++;
-	if (c == '|')
-		return ;
-	if (*line == c)
-	{
-		(*marked)[i].flag |= M_CONTROL;
-		(*marked)[i++].c = *line++;
-	}
-	while (*line == ' ' || (*marked)[i].flag & M_QU_START)
-	{
-		(*marked)[i].flag |= M_CONTROL;
-		(*marked)[i++].c = *line++;
-	}
-	while (*line && (*line != ' ' || (*marked)[i].flag & M_QUOTED
-		|| (*marked)[i].flag & M_D_QUOTED))
-	{
-		(*marked)[i].flag |= M_CONTROL;
-		(*marked)[i++].c = *line++;
-	}
-}
-
-t_line_char	*mark_line(char *line)
-{
-	t_line_char	*marked;
-	int			i;
-
-	marked = ft_calloc(ft_strlen(line) + 1, sizeof(t_line_char));
-	if (marked == NULL)
-		return (NULL);
 	i = 0;
-	while (*line)
+	if (ft_isalpha((*str)[j + i]) || (*str)[j + i] == '_')
+		while ((*str)[j + ++i])
+			if (!ft_isalnum((*str)[j + i]) && (*str)[j + i] != '_')
+				break ;
+	tmp = (*str)[j + i];
+	(*str)[j + i] = 0;
+	env = getenv((*str) + j);
+	(*str)[j + i] = tmp;
+	new = ft_calloc(ft_strlen(*str) + ft_strlen(env) - (i + 1), sizeof(char));
+	if (new == NULL)
+		return (-1);
+	strncpy(new, *str, j - 1);
+	strcpy(new + ft_strlen(new), env);
+	strcpy(new + ft_strlen(new), (*str) + j + i);
+	free(*str);
+	*str = new;
+	return (0);
+}
+//	printf("new = [%s]\n", new);
+//	printf("strlen(str) = %zu\n", ft_strlen(*str));
+//	printf("i = %zu\n", i);
+//	printf("var : [%s] = [%s]\n", (*str) + j, env);
+//	printf("len var = %zu\n", ft_strlen(env));
+//	printf("len new = %lu\n", ft_strlen(*str) + ft_strlen(env) - (i + 1));
+//	printf("str = [%s] | j = %zu\n", *str, j);
+
+int	expansions(t_token **token)
+{
+	size_t	i;
+	size_t	j;
+	char	*end_quote;
+
+	i = 0;
+	end_quote = NULL;
+	while ((*token)[i].str)
 	{
-		if (!(marked[i].flag & M_QU_END) && !(marked[i].flag & M_ESCAPED))
+		j = 0;
+		while ((*token)[i].str[j])
 		{
-			if (*line == '\'')
-				mark_quoted(&marked, line, i, M_QUOTED);
-			else if (*line == '\"')
-				mark_quoted(&marked, line, i, M_D_QUOTED);
+			if (&((*token)[i].str[j]) > quoted(&((*token)[i].str[j]),
+						&end_quote) || *end_quote == '"')
+			{
+				if ((*token)[i].str[j++] == '$')
+					if ((*token)[i].str[j] && expand(&((*token)[i].str), j))
+						return (-1);
+			}
+			else
+				++j;
 		}
-		if (*line == '\\')
-			mark_escape(&marked, line, i);
-		marked[i++].c = *line++;
+		++i;
 	}
-	return (marked);
+	return (0);
 }
 
-t_line_char	*parse(char *buf)
+t_token	*parse(char *buf)
 {
 	char	**word;
+	t_token	*token;
+	size_t	i;
 
-	printf("nb of words = %u\n", count_words(buf));
 	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
-	if (word == NULL)
+	token = ft_calloc(count_words(buf) + 1, sizeof(t_token));
+	if (token == NULL || word == NULL)
 		return (NULL);
 	split_word(&word, buf);
-	for (int i = 0; word[i]; i++)
-		printf("word[%d] = [%s]\n", i, word[i]);
+	i = 0;
+	printf("nb of words = %d\n", count_words(buf));
+	while (word[i])
+	{
+		token[i].str = word[i];
+		if (is_metachar(word[i]) && is_metachar(word[i]) != BLANK)
+			token[i].flag = 1;
+		++i;
+	}
+	if (expansions(&token))
+		return ((t_token *)free_strs(word, count_words(buf)));
+	for (size_t i = 0; token[i].str; i++)
+		printf("token[%zu] = [%s] (%d)\n", i, token[i].str, token[i].flag);
 	return (NULL);
 }
