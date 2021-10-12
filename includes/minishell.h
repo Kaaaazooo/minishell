@@ -16,6 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <stdint.h>
 # include <string.h>
 # include <signal.h>
 # include <errno.h>
@@ -61,10 +62,11 @@ typedef struct s_command
 }			t_cmd;
 
 t_line_char		*parse(char *line);
-t_lstr			*trim_redir(t_line_char *marked);
-char			**split_word(char *buf);
+char			**split_word(char ***dst, char *s);
+uint32_t		count_words(char *buf);
 
 char			**line_split(char **res, t_line_char *s, char c);
+char			**free_strs(char **strs, int j);
 t_line_char		**marked_split(t_line_char ***res, t_line_char *s, char c);
 size_t			count(t_line_char *s, char c);
 

@@ -30,7 +30,7 @@ int	main(void)
 		add_history(buf);
 		if (!strcmp(buf, "exit"))
 			break ;
-		split_word(buf);
+		parse(buf);
 		free(buf);
 	}
 	free(buf);

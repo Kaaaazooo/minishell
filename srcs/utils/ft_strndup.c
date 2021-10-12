@@ -1,25 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/22 16:08:32 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/06 18:19:02 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/09/23 11:04:04 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/09/23 11:50:59 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#include "utils.h"
 
-# include <unistd.h>
-# include <stdlib.h>
+char	*ft_strndup(const char *s1, size_t n)
+{
+	unsigned int	i;
+	char			*s2;
 
-size_t	ft_strlen(char *str);
-void	*ft_calloc(size_t count, size_t size);
-char	*ft_strcpy(char *dst, const char *src);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-char	*ft_strndup(const char *s1, size_t n);
-
-#endif
+	s2 = malloc(sizeof(*s2) * (n + 1));
+	if (!s2)
+		return (0);
+	i = 0;
+	while (s1[i] && i < n)
+	{
+		s2[i] = s1[i];
+		i++;
+	}
+	s2[i] = 0;
+	return (s2);
+}

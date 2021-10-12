@@ -30,7 +30,7 @@ size_t	count(t_line_char *s, char c)
 	return (count);
 }
 
-static char	**free_strs(char **strs, int j)
+char	**free_strs(char **strs, int j)
 {
 	while (j >= 0)
 		free(strs[j--]);

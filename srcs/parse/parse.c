@@ -102,21 +102,16 @@ t_line_char	*mark_line(char *line)
 	return (marked);
 }
 
-t_line_char	*parse(char *line)
+t_line_char	*parse(char *buf)
 {
-	t_line_char	*marked;
-	int			i;
+	char	**word;
 
-	marked = mark_line(line);
-	i = 0;
-	while (*line)
-	{
-		if (!((marked)[i].flag & M_QUOTED) && !((marked)[i].flag & M_ESCAPED))
-			if (*line == '|' || *line == '<' || *line == '>')
-				mark_control(&marked, line, i);
-		marked[i++].c = *line++;
-	}
-	if (marked == NULL)
+	printf("nb of words = %u\n", count_words(buf));
+	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
+	if (word == NULL)
 		return (NULL);
-	return (marked);
+	split_word(&word, buf);
+	for (int i = 0; word[i]; i++)
+		printf("word[%d] = [%s]\n", i, word[i]);
+	return (NULL);
 }

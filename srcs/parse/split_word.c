@@ -29,32 +29,33 @@ uint8_t	is_metachar(char *str)
 	return (0);
 }
 
-void	quoted(char *buf, char **quote_end)
+char	*quoted(char *buf, char **end_quote)
 {
 	char	c;
 
 	if (*buf != '\'' && *buf != '"')
-		return ;
-	if (*quote_end >= buf)
-		return ;
+		return (*end_quote);
+	if (*end_quote >= buf)
+		return (*end_quote);
 	c = *buf++;
 	while (*buf != c)
 		++buf;
-	*quote_end = buf;
+	*end_quote = buf;
+	return (*end_quote);
 }
 
 uint32_t	count_words(char *buf)
 {
 	uint32_t	count;
-	char		*quote_end;
+	char		*end_quote;
 
-	quote_end = buf;
+	end_quote = buf;
 	count = 0;
 	while (*buf)
 	{
-		while (*buf && is_metachar(buf) && buf >= quote_end)
+		while (*buf && is_metachar(buf) && buf >= end_quote)
 		{
-			if (buf >= quote_end)
+			if (buf >= end_quote)
 			{
 				if (is_metachar(buf) == G_GREAT || is_metachar(buf) == L_LESS)
 					++buf;
@@ -63,15 +64,58 @@ uint32_t	count_words(char *buf)
 			}
 			++buf;
 		}
+		if (*buf == 0)
+			break ;
 		++count;
-		while (*buf && ((!is_metachar(buf)) || buf < quote_end))
-			quoted(buf++, &quote_end);
+		while (*buf && ((!is_metachar(buf)) || buf < end_quote))
+			quoted(buf++, &end_quote);
 	}
 	return (count);
 }
 
-char	**split_word(char *buf)
+int	incr_index(char *s, char **end_quote, uint32_t *i)
 {
-	printf("nb of words = %u\n", count_words(buf));
-	return (NULL);
+	int	ret;
+
+	ret = 0;
+	if (s >= quoted(s, end_quote))
+	{
+		if (is_metachar(s) == G_GREAT || is_metachar(s) == L_LESS)
+			ret = 2;
+		else if (is_metachar(s))
+			ret = 1;
+		else if (s[1] && is_metachar(s + 1)
+			&& is_metachar(s + 1) != BLANK)
+			ret = 1;
+	}
+	if (ret == 2)
+		++(*i);
+	return (ret);
+}
+
+char	**split_word(char ***dst, char *s)
+{
+	uint32_t	i;
+	uint32_t	j;
+	char		*end_quote;
+
+	j = 0;
+	end_quote = s;
+	while (*s)
+	{
+		while (*s && s > quoted(s, &end_quote) && is_metachar(s) == BLANK)
+			s++;
+		i = 0;
+		if (*s == 0)
+			break ;
+		while (s[i] && (&s[i] < quoted(&s[i], &end_quote)
+				|| is_metachar(&s[i]) != BLANK))
+			if (incr_index(&s[i++], &end_quote, &i))
+				break ;
+		(*dst)[j++] = ft_strndup(s, i);
+		if (!(*dst)[j - 1])
+			return (free_strs((*dst), (int)(j - 1)));
+		s += i;
+	}
+	return (*dst);
 }
