@@ -15,6 +15,7 @@
 int	main(void)
 {
 	char		*buf;
+	t_token		*token;
 
 	while (1)
 	{
@@ -30,7 +31,13 @@ int	main(void)
 		add_history(buf);
 		if (!strcmp(buf, "exit"))
 			break ;
-		parse(buf);
+		token = parse(buf);
+		for (size_t i = 0; token[i].str; i++)
+		{
+			printf("token[%zu] = [%s] (%d)\n", i, token[i].str, token[i].flag);
+			free(token[i].str);
+		}
+		free(token);
 		free(buf);
 	}
 	free(buf);

@@ -33,17 +33,29 @@
 # define L_LESS 16
 # define PIPE 32
 
+# define M_QU_START 1
+# define M_QU_END 2
+# define M_QUOTED 4
+# define M_D_QUOTED 8
+
 typedef struct s_token
 {
 	char	*str;
 	uint8_t	flag;
-}				t_token;
+}		t_token;
+
+typedef struct s_marked_char
+{
+	char	c;
+	uint8_t	flag;
+}		t_m_char;
 
 t_token		*parse(char *line);
 char		**split_word(char ***dst, char *s);
 uint32_t	count_words(char *buf);
 char		*quoted(char *buf, char **end_quote);
 uint8_t		is_metachar(char *str);
+int			expansion(t_token **token, t_m_char **m_str);
 
 char		**free_strs(char **strs, int j);
 

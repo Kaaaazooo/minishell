@@ -12,91 +12,87 @@
 
 #include "minishell.h"
 
-int	expand(char **str, size_t j)
+t_m_char	*str_to_m_str(char *str)
 {
-	size_t	i;
-	char	tmp;
-	char	*env;
-	char	*new;
+	size_t		i;
+	t_m_char	*m_str;
 
+	m_str = ft_calloc(ft_strlen(str) + 1, sizeof(t_m_char));
+	if (m_str == NULL)
+		return (NULL);
 	i = 0;
-	if (ft_isalpha((*str)[j + i]) || (*str)[j + i] == '_')
-		while ((*str)[j + ++i])
-			if (!ft_isalnum((*str)[j + i]) && (*str)[j + i] != '_')
-				break ;
-	tmp = (*str)[j + i];
-	(*str)[j + i] = 0;
-	env = getenv((*str) + j);
-	(*str)[j + i] = tmp;
-	new = ft_calloc(ft_strlen(*str) + ft_strlen(env) - (i + 1), sizeof(char));
-	if (new == NULL)
-		return (-1);
-	strncpy(new, *str, j - 1);
-	strcpy(new + ft_strlen(new), env);
-	strcpy(new + ft_strlen(new), (*str) + j + i);
-	free(*str);
-	*str = new;
-	return (0);
-}
-//	printf("new = [%s]\n", new);
-//	printf("strlen(str) = %zu\n", ft_strlen(*str));
-//	printf("i = %zu\n", i);
-//	printf("var : [%s] = [%s]\n", (*str) + j, env);
-//	printf("len var = %zu\n", ft_strlen(env));
-//	printf("len new = %lu\n", ft_strlen(*str) + ft_strlen(env) - (i + 1));
-//	printf("str = [%s] | j = %zu\n", *str, j);
-
-int	expansions(t_token **token)
-{
-	size_t	i;
-	size_t	j;
-	char	*end_quote;
-
-	i = 0;
-	end_quote = NULL;
-	while ((*token)[i].str)
+	while (str[i])
 	{
-		j = 0;
-		while ((*token)[i].str[j])
-		{
-			if (&((*token)[i].str[j]) > quoted(&((*token)[i].str[j]),
-						&end_quote) || *end_quote == '"')
-			{
-				if ((*token)[i].str[j++] == '$')
-					if ((*token)[i].str[j] && expand(&((*token)[i].str), j))
-						return (-1);
-			}
-			else
-				++j;
-		}
+		m_str[i].c = str[i];
 		++i;
 	}
-	return (0);
+	return (m_str);
+}
+
+size_t	mark_quoted(t_m_char **marked, char *word, size_t i, uint8_t flag)
+{
+	(*marked)[i].c = *(word)++;
+	if (!((*marked)[i].flag & M_QUOTED) &&
+			!((*marked)[i].flag & M_D_QUOTED))
+		(*marked)[i++].flag |= M_QU_START;
+	while (*word && ((flag & M_D_QUOTED && *word != '\"')
+			|| (flag & M_QUOTED && *word != '\'')))
+	{
+		(*marked)[i].c = *(word++);
+		if (!((*marked)[i].flag & M_QUOTED) &&
+				!((*marked)[i].flag & M_D_QUOTED))
+			(*marked)[i++].flag |= flag;
+	}
+	(*marked)[i].c = *(word)++;
+	if (!((*marked)[i].flag & M_QUOTED) &&
+			!((*marked)[i].flag & M_D_QUOTED))
+		(*marked)[i].flag |= M_QU_END;
+	return (i);
+}
+
+void	mark_expand(char ***word, t_token **token)
+{
+	size_t		i;
+	size_t		j;
+	t_m_char	*m_str;
+
+	i = 0;
+	while ((*word)[i])
+	{
+		m_str = str_to_m_str((*word)[i]);
+		if (m_str == NULL)
+			break ;
+		j = 0;
+		while ((*word)[i][j])
+		{
+			if (m_str[j].c == '\'')
+				j = mark_quoted(&m_str, &(*word)[i][j], j, M_QUOTED);
+			if (m_str[j].c == '\"')
+				j = mark_quoted(&m_str, &(*word)[i][j], j, M_D_QUOTED);
+			++j;
+		}
+		expansion(token, &m_str);
+		free(m_str);
+		++i;
+	}
 }
 
 t_token	*parse(char *buf)
 {
 	char	**word;
 	t_token	*token;
-	size_t	i;
 
 	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
+	if (word == NULL)
+		return (NULL);
 	token = ft_calloc(count_words(buf) + 1, sizeof(t_token));
 	if (token == NULL || word == NULL)
-		return (NULL);
-	split_word(&word, buf);
-	i = 0;
-	printf("nb of words = %d\n", count_words(buf));
-	while (word[i])
 	{
-		token[i].str = word[i];
-		if (is_metachar(word[i]) && is_metachar(word[i]) != BLANK)
-			token[i].flag = 1;
-		++i;
+		free(word);
+		return (NULL);
 	}
-	if (expansions(&token))
-		return ((t_token *)free_strs(word, count_words(buf)));
-	for (size_t i = 0; token[i].str; i++)
-		printf("token[%zu] = [%s] (%d)\n", i, token[i].str, token[i].flag);
-	return (NULL);
+	split_word(&word, buf);
+	mark_expand(&word, &token);
+	free_strs(word, count_words(buf));
+	return (token);
 }
