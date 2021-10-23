@@ -22,26 +22,6 @@ size_t	m_strlen(t_m_char *m_str)
 	return (i);
 }
 
-char	*m_str_to_str(t_m_char *m_str)
-{
-	size_t	i;
-	char	*str;
-
-	i = 0;
-	while (m_str[i].c)
-		++i;
-	str = ft_calloc(i + 1, sizeof(char));
-	if (str == NULL)
-		return (NULL);
-	i = 0;
-	while (m_str[i].c)
-	{
-		str[i] = m_str[i].c;
-		++i;
-	}
-	return (str);
-}
-
 int	merge_env(t_m_char **m_str, char *env, size_t *i, size_t j)
 {
 	t_m_char	*new;
@@ -98,11 +78,29 @@ int	expand(t_m_char **m_str, size_t *i)
 	return (0);
 }
 
-int	expansion(t_token **token, t_m_char **m_str)
+void	remove_quote(t_m_char **m_str)
+{
+	size_t	i;
+	size_t	j;
+	size_t	len;
+
+	i = 0;
+	j = 0;
+	len = m_strlen(*m_str);
+	while (i < len)
+	{
+		if ((*m_str)[i].flag ^ M_QU_START && (*m_str)[i].flag ^ M_QU_END)
+			(*m_str)[j++] = (*m_str)[i];
+		++i;
+	}
+	(*m_str)[j].c = 0;
+	(*m_str)[j].flag = 0;
+}
+
+int	expansion(t_token *token, t_m_char **m_str, uint8_t metachar)
 {
 	size_t	i;
 
-	(void)token;
 	i = 0;
 	while ((*m_str)[i].c)
 	{
@@ -114,9 +112,11 @@ int	expansion(t_token **token, t_m_char **m_str)
 		else
 			++i;
 	}
-	printf("[");
-	for (size_t j = 0; (*m_str)[j].c; j++)
-		printf("%c", (*m_str)[j].c);
-	printf("]\n");
+	remove_quote(m_str);
+	if (metachar)
+		token->flag = 1;
+	token->str = m_str_to_str((*m_str));
+	if (token->str == NULL)
+		return (-1);
 	return (0);
 }

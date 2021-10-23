@@ -29,6 +29,26 @@ t_m_char	*str_to_m_str(char *str)
 	return (m_str);
 }
 
+char	*m_str_to_str(t_m_char *m_str)
+{
+	size_t	i;
+	char	*str;
+
+	i = 0;
+	while (m_str[i].c)
+		++i;
+	str = ft_calloc(i + 1, sizeof(char));
+	if (str == NULL)
+		return (NULL);
+	i = 0;
+	while (m_str[i].c)
+	{
+		str[i] = m_str[i].c;
+		++i;
+	}
+	return (str);
+}
+
 size_t	mark_quoted(t_m_char **marked, char *word, size_t i, uint8_t flag)
 {
 	(*marked)[i].c = *(word)++;
@@ -71,7 +91,7 @@ void	mark_expand(char ***word, t_token **token)
 				j = mark_quoted(&m_str, &(*word)[i][j], j, M_D_QUOTED);
 			++j;
 		}
-		expansion(token, &m_str);
+		expansion(&(*token)[i], &m_str, is_metachar((*word)[i]));
 		free(m_str);
 		++i;
 	}

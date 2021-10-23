@@ -24,5 +24,7 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_strndup(const char *s1, size_t n);
 int		ft_isalnum(int c);
 int		ft_isalpha(int c);
+void	*ft_memset(void *b, int c, size_t len);
+char	**free_strs(char **strs, int j);
 
 #endif

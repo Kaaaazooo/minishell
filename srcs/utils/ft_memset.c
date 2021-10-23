@@ -1,24 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_strs.c                                        :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/12 15:45:05 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/10/06 16:14:47 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/10/12 18:21:09 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-char	**free_strs(char **strs, int j)
+void	*ft_memset(void *b, int c, size_t len)
 {
-	if (strs)
+	size_t			i;
+	unsigned char	uc;
+	unsigned char	*str;
+
+	i = 0;
+	uc = (unsigned char)c;
+	str = (unsigned char *)b;
+	while (i < len)
 	{
-		while (j >= 0)
-			free(strs[j--]);
-		free(strs);
+		str[i] = uc;
+		i++;
 	}
-	return (NULL);
+	return (b);
 }

@@ -20,6 +20,7 @@
 # include <string.h>
 # include <signal.h>
 # include <errno.h>
+# include <wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -44,6 +45,12 @@ typedef struct s_token
 	uint8_t	flag;
 }		t_token;
 
+typedef struct s_command
+{
+	char	**av;
+	char	**redir;
+}		t_cmd;
+
 typedef struct s_marked_char
 {
 	char	c;
@@ -55,7 +62,8 @@ char		**split_word(char ***dst, char *s);
 uint32_t	count_words(char *buf);
 char		*quoted(char *buf, char **end_quote);
 uint8_t		is_metachar(char *str);
-int			expansion(t_token **token, t_m_char **m_str);
+int			expansion(t_token *token, t_m_char **m_str, uint8_t metachar);
+char		*m_str_to_str(t_m_char *m_str);
 
 char		**free_strs(char **strs, int j);
 
