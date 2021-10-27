@@ -18,6 +18,7 @@
 # include <stdio.h>
 # include <stdint.h>
 # include <string.h>
+# include <fcntl.h>
 # include <signal.h>
 # include <errno.h>
 # include <wait.h>
@@ -66,5 +67,9 @@ int			expansion(t_token *token, t_m_char **m_str, uint8_t metachar);
 char		*m_str_to_str(t_m_char *m_str);
 
 char		**free_strs(char **strs, int j);
+
+int			cmd(t_token *token, char **env);
+int			exec_cmd(t_cmd cmd, char **env);
+int			pipeline(t_token *token, t_cmd *cmd, size_t n, char **env);
 
 #endif
