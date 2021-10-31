@@ -30,16 +30,30 @@ static size_t	count(char const *s, char c)
 	return (count);
 }
 
+char	**split_alloc(char const *s, char c)
+{
+	char	**res;
+
+	if (s)
+		res = (char **)ft_calloc(sizeof(char *), (count(s, c) + 1));
+	else
+	{
+		res = (char **)ft_calloc(sizeof(char *), 2);
+		if (res == NULL)
+			return (NULL);
+	}
+	return (res);
+}
+
 char	**ft_split(char const *s, char c)
 {
 	char		**res;
 	size_t		i;
 	size_t		j;
 
-	if (s)
-		res = (char **)ft_calloc(sizeof(char *), (count(s, c) + 1));
+	res = split_alloc(s, c);
 	if (!s || !res)
-		return (NULL);
+		return (res);
 	j = 0;
 	while (*s)
 	{

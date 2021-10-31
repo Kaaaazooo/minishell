@@ -51,6 +51,13 @@ char	*m_str_to_str(t_m_char *m_str)
 
 size_t	mark_quoted(t_m_char **marked, char *word, size_t i, uint8_t flag)
 {
+	size_t	j;
+
+	j = 1;
+	while (word[j] && word[j] != *word)
+		++j;
+	if (word[j] == 0)
+		return (++i);
 	(*marked)[i].c = *(word)++;
 	if (!((*marked)[i].flag & M_QUOTED) &&
 			!((*marked)[i].flag & M_D_QUOTED))
@@ -101,6 +108,7 @@ t_token	*parse(char *buf)
 {
 	char	**word;
 	t_token	*token;
+	size_t	i;
 
 	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
 	if (word == NULL)
@@ -113,6 +121,14 @@ t_token	*parse(char *buf)
 	}
 	split_word(&word, buf);
 	mark_expand(&word, &token);
+	i = 0;
+	if (mark_redir(&token))
+	{
+		while (token[i].str)
+			free(token[i++].str);
+		free(token);
+		token = NULL;
+	}
 	free_strs(word, count_words(buf));
 	return (token);
 }

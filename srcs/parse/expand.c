@@ -12,16 +12,6 @@
 
 #include "minishell.h"
 
-size_t	m_strlen(t_m_char *m_str)
-{
-	size_t	i;
-
-	i = 0;
-	while (m_str[i].c)
-		++i;
-	return (i);
-}
-
 int	merge_env(t_m_char **m_str, char *env, size_t *i, size_t j)
 {
 	t_m_char	*new;
@@ -50,6 +40,18 @@ int	merge_env(t_m_char **m_str, char *env, size_t *i, size_t j)
 	return (0);
 }
 
+int	expand_ret(t_m_char **m_str, size_t *i)
+{
+	char	ret[16];
+
+	ft_memset(ret, 0, 16);
+	ft_itoa(ret, g_sh.status);
+	if (merge_env(m_str, ret, i, 1))
+		return (-1);
+	*i += ft_strlen(ret) - 1;
+	return (0);
+}
+
 int	expand(t_m_char **m_str, size_t *i)
 {
 	size_t	j;
@@ -57,8 +59,9 @@ int	expand(t_m_char **m_str, size_t *i)
 	char	*str;
 	char	*env;
 
-	++(*i);
 	j = 0;
+	if ((*m_str)[*i].c == '?')
+		return (expand_ret(m_str, i));
 	if (ft_isalpha((*m_str)[*i + j].c) || (*m_str)[*i + j].c == '_')
 		while ((*m_str)[*i + ++j].c)
 			if (!ft_isalnum((*m_str)[*i + j].c) && (*m_str)[*i + j].c != '_')
@@ -106,6 +109,7 @@ int	expansion(t_token *token, t_m_char **m_str, uint8_t metachar)
 	{
 		if ((*m_str)[i].c == '$' && (*m_str)[i].flag ^ M_QUOTED)
 		{
+			++i;
 			if (expand(m_str, &i))
 				return (-1);
 		}

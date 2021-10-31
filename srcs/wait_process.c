@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   wait_process.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,53 +12,27 @@
 
 #include "minishell.h"
 
-t_sh	g_sh;
-
-void	sigint(int signo)
+void	wait_process(size_t n, pid_t *pid)
 {
-	if (signo == SIGINT && g_sh.pipe == 0)
+	size_t	i;
+	int		status;
+
+	i = 0;
+	status = 0;
+	while (i < n)
 	{
-		rl_replace_line("", 0);
-		rl_on_new_line();
-		write(1, "\n", 1);
-		rl_redisplay();
+		waitpid(pid[i++], &status, 0);
+		if (WIFSIGNALED(status))
+			if (WTERMSIG(status) == SIGINT)
+				write(1, "\n", 1);
 	}
-}
-
-int	minishell_loop(char **env)
-{
-	char		*buf;
-	t_token		*token;
-
-	while (1)
-	{
-		signal(SIGINT, sigint);
-		signal(SIGQUIT, SIG_IGN);
-		buf = readline("minishell$ ");
-		if (buf == NULL)
-			break ;
-		if (ft_strlen(buf) == 0)
-		{
-			free(buf);
-			continue ;
-		}
-		add_history(buf);
-		token = parse(buf);
-		if (token)
-			cmd(token, env);
-		if (!strcmp(buf, "exit"))
-			break ;
-		free(buf);
-	}
-	free(buf);
-	return (0);
-}
-
-int	main(int ac, char **av, char **env)
-{
-	(void)ac;
-	(void)av;
 	g_sh.pipe = 0;
-	g_sh.status = 0;
-	return (minishell_loop(env));
+	if (WIFEXITED(status))
+		g_sh.status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGQUIT)
+			write(2, "Quit (core dumped)\n", 19);
+		g_sh.status = 128 + WTERMSIG(status);
+	}
 }

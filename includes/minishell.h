@@ -40,6 +40,13 @@
 # define M_QUOTED 4
 # define M_D_QUOTED 8
 
+typedef struct s_shell
+{
+	pid_t	pid;
+	uint8_t	pipe;
+	int		status;
+}		t_sh;
+
 typedef struct s_token
 {
 	char	*str;
@@ -61,15 +68,27 @@ typedef struct s_marked_char
 t_token		*parse(char *line);
 char		**split_word(char ***dst, char *s);
 uint32_t	count_words(char *buf);
+int			mark_redir(t_token **token);
 char		*quoted(char *buf, char **end_quote);
 uint8_t		is_metachar(char *str);
 int			expansion(t_token *token, t_m_char **m_str, uint8_t metachar);
 char		*m_str_to_str(t_m_char *m_str);
+size_t		m_strlen(t_m_char *m_str);
 
 char		**free_strs(char **strs, int j);
 
 int			cmd(t_token *token, char **env);
 int			exec_cmd(t_cmd cmd, char **env);
 int			pipeline(t_token *token, t_cmd *cmd, size_t n, char **env);
+void		minishell_error(char *s1, char *s2, char *s3);
+
+void		handle_redir(t_cmd cmd);
+int			cmd_not_found(char *str);
+int			try_exec(char *path, char *file, char **cmd, char **env);
+void		wait_process(size_t n, pid_t *pid);
+
+void		sigint(int signo);
+
+extern t_sh	g_sh;
 
 #endif

@@ -59,64 +59,6 @@ int	get_cmd_tab(t_cmd **cmd, t_token *token, size_t size)
 	return (0);
 }
 
-void	print_cmd(t_cmd *cmd)
-{
-	for (int i = 0; cmd[i].av; i++)
-	{
-		printf("ARGS:\n");
-		for (int j = 0; cmd[i].av[j]; j++)
-			printf("[%s]\n", cmd[i].av[j]);
-		printf("\nREDIR:\n");
-		for (int j = 0; cmd[i].redir[j]; j++)
-			printf("[%s]\n", cmd[i].redir[j]);
-		printf("______________\n\n");
-	}
-}
-
-////////////
-
-void	minishell_error(char *error, char *arg)
-{
-	int		i;
-	char	buf[8096];
-
-	i = 0;
-	while (i < 8096)
-		buf[i++] = 0;
-	ft_strcpy(buf + ft_strlen(buf), "minishell: ");
-	ft_strcpy(buf + ft_strlen(buf), error);
-	ft_strcpy(buf + ft_strlen(buf), ": ");
-	if (arg)
-		ft_strcpy(buf + ft_strlen(buf), arg);
-	ft_strcpy(buf + ft_strlen(buf), "\n");
-	write(STDERR_FILENO, buf, ft_strlen(buf));
-}
-
-int	try_exec(char *file, char **cmd, char **env)
-{
-	int		fd;
-
-	fd = open(file, O_RDONLY);
-	if (fd >= 0 && !close(fd))
-	{
-		if (execve(file, cmd, env) < 0)
-		{
-			if (errno == ENOEXEC || errno == EACCES)
-				minishell_error(strerror(errno), *cmd);
-			else
-				perror("minishell");
-			exit(errno);
-		}
-	}
-	return (0);
-}
-
-int	cmd_not_found(char *str)
-{
-	minishell_error("command not found", str);
-	exit(127);
-}
-
 char	*joinpath_to_file(char *path, char *filename)
 {
 	char	*file;
@@ -132,68 +74,24 @@ char	*joinpath_to_file(char *path, char *filename)
 	return (file);
 }
 
-void	redir(t_cmd cmd)
-{
-	size_t	i;
-	int		fd;
-
-	i = SIZE_MAX;
-	while (cmd.redir[++i])
-	{
-		if (!ft_strncmp(">>", cmd.redir[i], 2))
-		{
-			fd = open(cmd.redir[++i], O_RDWR | O_TRUNC | O_CREAT | O_APPEND,
-					0644);
-			if (fd < 0)
-			{
-				minishell_error(cmd.redir[i], strerror(errno));
-				exit(errno + 127);
-			}
-			dup2(fd, 1);
-		}
-		else if (!ft_strncmp("<<", cmd.redir[i], 2))
-		{
-			printf("STDIN REDIR WHILE NOT %s\n", cmd.redir[++i]);
-		}
-		else if (cmd.redir[i][0] == '>')
-		{
-			fd = open(cmd.redir[++i], O_RDWR | O_TRUNC | O_CREAT, 0644);
-			if (fd < 0)
-			{
-				minishell_error(cmd.redir[i], strerror(errno));
-				exit(errno + 127);
-			}
-			dup2(fd, 1);
-		}
-		else if (cmd.redir[i][0] == '<')
-		{
-			fd = open(cmd.redir[++i], O_RDONLY);
-			if (fd < 0)
-			{
-				minishell_error(cmd.redir[i], strerror(errno));
-				exit(errno + 127);
-			}
-			dup2(fd, 0);
-		}
-	}
-}
-
 int	exec_cmd(t_cmd cmd, char **env)
 {
 	char	*tmp;
 	char	**paths;
 	size_t	i;
 
-	redir(cmd);
+	handle_redir(cmd);
 	paths = ft_split(getenv("PATH"), ':');
 	if (paths == NULL)
 		exit(1);
+	if (try_exec(*paths, cmd.av[0], cmd.av, env))
+		exit(errno + 127);
 	i = SIZE_MAX;
 	while (paths[++i])
 	{
 		tmp = joinpath_to_file(paths[i], *(cmd.av));
-		if (tmp == NULL || try_exec(tmp, cmd.av, env))
-			exit(errno + 127);
+		if (tmp == NULL || try_exec(paths[i], tmp, cmd.av, env))
+			exit((int)(uint8_t)(errno + 127));
 		free(tmp);
 	}
 	if (!paths[i])
@@ -208,17 +106,6 @@ int	cmd(t_token *token, char **env)
 	t_token	*tmp;
 	t_cmd	*cmd;
 
-	n = SIZE_MAX;
-	while (token[++n].str)
-	{
-		if (token[n].flag && *(token[n].str) != '|')
-		{
-			if (token[n + 1].str && !token[n + 1].flag)
-				token[n++ + 1].flag = 1;
-			else
-				printf("syntax error\n");
-		}
-	}
 	n = 1;
 	tmp = token;
 	while (tmp->str)
@@ -229,3 +116,4 @@ int	cmd(t_token *token, char **env)
 	pipeline(token, cmd, n, env);
 	return (0);
 }
+	//printf("$? = [%s]\n", getenv("?"));
