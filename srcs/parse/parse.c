@@ -77,19 +77,19 @@ size_t	mark_quoted(t_m_char **marked, char *word, size_t i, uint8_t flag)
 	return (i);
 }
 
-void	mark_expand(char ***word, t_token **token)
+int	mark_expand(char ***word, t_token **token)
 {
 	size_t		i;
 	size_t		j;
 	t_m_char	*m_str;
 
-	i = 0;
-	while ((*word)[i])
+	i = SIZE_MAX;
+	j = 0;
+	while (j == 0 && (*word)[++i])
 	{
 		m_str = str_to_m_str((*word)[i]);
 		if (m_str == NULL)
-			break ;
-		j = 0;
+			return (-1);
 		while ((*word)[i][j])
 		{
 			if (m_str[j].c == '\'')
@@ -98,10 +98,10 @@ void	mark_expand(char ***word, t_token **token)
 				j = mark_quoted(&m_str, &(*word)[i][j], j, M_D_QUOTED);
 			++j;
 		}
-		expansion(&(*token)[i], &m_str, is_metachar((*word)[i]));
+		j = expansion(&(*token)[i], &m_str, is_metachar((*word)[i]));
 		free(m_str);
-		++i;
 	}
+	return (j);
 }
 
 t_token	*parse(char *buf)
@@ -110,6 +110,7 @@ t_token	*parse(char *buf)
 	t_token	*token;
 	size_t	i;
 
+	errno = 0;
 	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
 	if (word == NULL)
 		return (NULL);
@@ -120,9 +121,8 @@ t_token	*parse(char *buf)
 		return (NULL);
 	}
 	split_word(&word, buf);
-	mark_expand(&word, &token);
-	i = 0;
-	if (mark_redir(&token))
+	i = mark_expand(&word, &token);
+	if (i || mark_redir(&token))
 	{
 		while (token[i].str)
 			free(token[i++].str);

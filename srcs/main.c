@@ -14,6 +14,18 @@
 
 t_sh	g_sh;
 
+void	ret_error(t_token *token)
+{
+	if (errno)
+	{
+		perror("minishell");
+		g_sh.status = errno + 127;
+	}
+	else
+		g_sh.status = 2;
+	free(token);
+}
+
 void	sighandler(int signo)
 {
 	if (signo == SIGINT && g_sh.pipe == 0)
@@ -53,8 +65,8 @@ int	minishell_loop(char **env)
 		}
 		add_history(buf);
 		token = parse(buf);
-		if (token)
-			cmd(token, env);
+		if (cmd(token, env))
+			ret_error(token);
 		free(buf);
 	}
 	free(buf);

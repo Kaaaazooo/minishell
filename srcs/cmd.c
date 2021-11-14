@@ -83,7 +83,7 @@ int	exec_cmd(t_cmd cmd, char **env)
 	handle_redir(cmd);
 	paths = ft_split(getenv("PATH"), ':');
 	if (paths == NULL)
-		exit(1);
+		exit(errno + 127);
 	if (try_exec(*paths, cmd.av[0], cmd.av, env))
 		exit(errno + 127);
 	i = SIZE_MAX;
@@ -106,14 +106,14 @@ int	cmd(t_token *token, char **env)
 	t_token	*tmp;
 	t_cmd	*cmd;
 
+	if (token == NULL)
+		return (-1);
 	n = 1;
 	tmp = token;
 	while (tmp->str)
 		if (*(tmp++->str) == '|')
 			n += (tmp - 1)->flag;
 	if (get_cmd_tab(&cmd, token, n))
-		printf("MALLOC FAILED\n");
-	pipeline(token, cmd, n, env);
-	return (0);
+		return (-1);
+	return (pipeline(token, cmd, n, env));
 }
-	//printf("$? = [%s]\n", getenv("?"));
