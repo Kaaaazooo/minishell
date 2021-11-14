@@ -12,6 +12,19 @@
 
 #include "minishell.h"
 
+void	unexpected_token(char *str)
+{
+	char	msg[128];
+
+	ft_strcpy(msg, "syntax error near unexpected token '");
+	if (str)
+		ft_strcpy(msg + ft_strlen(msg), str);
+	else
+		ft_strcpy(msg + ft_strlen(msg), "newline");
+	ft_strcpy(msg + ft_strlen(msg), "'");
+	minishell_error("minishell", msg, NULL);
+}
+
 int	mark_redir(t_token **token)
 {
 	size_t	n;
@@ -25,15 +38,14 @@ int	mark_redir(t_token **token)
 				(*token)[n++ + 1].flag = 1;
 			else
 			{
-				minishell_error("minishell",
-					"syntax error near unexpected token", NULL);
+				unexpected_token((*token)[n + 1].str);
 				return (-1);
 			}
 		}
-		else if ((*token)[n].flag && (*token)[n + 1].str == NULL)
+		else if ((*token)[n].flag && ((*token)[n + 1].str == NULL
+			|| is_metachar((*token)[n + 1].str) == PIPE))
 		{
-			minishell_error("minishell",
-				"syntax error near unexpected token", NULL);
+			unexpected_token((*token)[n + 1].str);
 			return (-1);
 		}
 	}
