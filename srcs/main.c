@@ -14,15 +14,22 @@
 
 t_sh	g_sh;
 
-void	sigint(int signo)
+void	sighandler(int signo)
 {
 	if (signo == SIGINT && g_sh.pipe == 0)
 	{
 		rl_replace_line("", 0);
 		rl_on_new_line();
+		g_sh.status = 130;
 		write(1, "\n", 1);
 		rl_redisplay();
 	}
+}
+
+void	signals(void)
+{
+	signal(SIGINT, sighandler);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 int	minishell_loop(char **env)
@@ -32,11 +39,13 @@ int	minishell_loop(char **env)
 
 	while (1)
 	{
-		signal(SIGINT, sigint);
-		signal(SIGQUIT, SIG_IGN);
+		signals();
 		buf = readline("minishell$ ");
 		if (buf == NULL)
+		{
+			printf("exit\n");
 			break ;
+		}
 		if (ft_strlen(buf) == 0)
 		{
 			free(buf);
@@ -46,8 +55,6 @@ int	minishell_loop(char **env)
 		token = parse(buf);
 		if (token)
 			cmd(token, env);
-		if (!strcmp(buf, "exit"))
-			break ;
 		free(buf);
 	}
 	free(buf);
