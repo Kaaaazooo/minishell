@@ -2,8 +2,8 @@ NAME = minishell
 
 HEADER = includes
 
-OPTIONS = -I $(HEADER)
-LDFLAGS = -L /Users/sabrugie/.brew/opt/readline -lreadline
+OPTIONS = -I $(HEADER) -I /Users/sabrugie/.brew/opt/readline/include
+LDFLAGS = -L /Users/sabrugie/.brew/opt/readline/lib -lreadline
 LDFLAGS_LINUX = -lreadline
 CFLAGS = -Wall -Werror -Wextra $(OPTIONS)
 
