@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/12 17:02:29 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/15 16:59:57 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <fcntl.h>
 # include <signal.h>
 # include <errno.h>
-# include <wait.h>
+# include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
