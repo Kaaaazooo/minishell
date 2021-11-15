@@ -29,6 +29,21 @@ void	redir(int dst, char *file, int flags, mode_t mode)
 	}
 }
 
+void	heredoc(void)
+{
+	char	buf[1024];
+	ssize_t	ret;
+
+	ret = read(0, buf, 1023);
+	buf[ret] = 0;
+	while (ret > 0)
+	{
+		printf("[%s]\n", buf);
+		ret = read(0, buf, 1023);
+		buf[ret] = 0;
+	}
+}
+
 void	handle_redir(t_cmd cmd)
 {
 	size_t	i;
