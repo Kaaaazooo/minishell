@@ -86,6 +86,7 @@ void		handle_redir(t_cmd cmd);
 int			cmd_not_found(char *str);
 int			try_exec(char *path, char *file, char **cmd, char **env);
 void		wait_process(size_t n, pid_t *pid);
+int			is_path(char *str);
 
 void		sigint(int signo);
 

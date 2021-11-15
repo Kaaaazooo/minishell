@@ -38,7 +38,8 @@ char	**split_alloc(char const *s, char c)
 		res = (char **)ft_calloc(sizeof(char *), (count(s, c) + 1));
 	else
 	{
-		res = (char **)ft_calloc(sizeof(char *), 2);
+		res = (char **)ft_calloc(2, sizeof(char *));
+		*res = (char *)ft_calloc(1, sizeof(char));
 		if (res == NULL)
 			return (NULL);
 	}

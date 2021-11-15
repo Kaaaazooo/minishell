@@ -64,7 +64,10 @@ char	*joinpath_to_file(char *path, char *filename)
 	char	*file;
 	char	*tmp;
 
-	tmp = ft_strjoin(path, "/");
+	if (*path)
+		tmp = ft_strjoin(path, "/");
+	else
+		tmp = (char *)ft_calloc(1, sizeof(char));
 	if (tmp == NULL)
 		return (NULL);
 	file = ft_strjoin(tmp, filename);
@@ -84,8 +87,9 @@ int	exec_cmd(t_cmd cmd, char **env)
 	paths = ft_split(getenv("PATH"), ':');
 	if (paths == NULL)
 		exit(errno + 127);
-	if (try_exec(*paths, cmd.av[0], cmd.av, env))
-		exit(errno + 127);
+	if (is_path(cmd.av[0]) || **paths == 0)
+		if (try_exec(*paths, cmd.av[0], cmd.av, env))
+			exit(errno + 127);
 	i = SIZE_MAX;
 	while (paths[++i])
 	{

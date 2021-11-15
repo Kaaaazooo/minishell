@@ -12,6 +12,17 @@
 
 #include "minishell.h"
 
+int	is_path(char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+		if (str[i++] == '/')
+			return (1);
+	return (0);
+}
+
 void	minishell_error(char *s1, char *s2, char *s3)
 {
 	int		i;
@@ -52,7 +63,7 @@ int	try_exec(char *path, char *file, char **cmd, char **env)
 			exit((int)(uint8_t)errno);
 		}
 	}
-	if (fd < 0 && path == NULL)
+	if (fd < 0 && (*path == 0 || is_path(*cmd)))
 	{
 		printf("errno = %d\n", errno);
 		minishell_error("minishell", file, strerror(errno));
