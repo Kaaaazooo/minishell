@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:32 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/12 18:40:24 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/20 18:48:46 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 
 char	*ft_itoa(char *dst, int n);
+char	*ft_llutoa(char *dst, long long unsigned int n);
 size_t	ft_strlen(char *str);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strcpy(char *dst, const char *src);
@@ -31,5 +32,14 @@ int		ft_isalpha(int c);
 void	*ft_memset(void *b, int c, size_t len);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 char	**free_strs(char **strs, int j);
+
+char	*ft_strdup(const char *s);
+int		len_array(char **array);
+char	*ft_strchr(const char *s, int c);
+char	*ft_strncpy(char *dest, const char *src, size_t n);
+int		ft_isdigit(int c);
+char	*ft_strjoin_with_quote(char *s1, char *s2);
+int		check_argv(char *str);
+int		find_pwd(char **env);
 
 #endif

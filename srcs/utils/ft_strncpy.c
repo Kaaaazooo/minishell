@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_strs.c                                        :+:      :+:    :+:   */
+/*   ft_strncpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/27 23:10:49 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/11/25 22:47:42 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/11/25 22:47:44 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-char	**free_strs(char **strs, int j)
+char	*ft_strncpy(char *dest, const char *src, size_t n)
 {
-	if (strs)
+	char	*p;
+
+	p = dest;
+	while (n--)
 	{
-		while (j >= 0)
-			free(strs[j--]);
-		free(strs);
+		*p++ = *src;
+		if (*src)
+			src++;
 	}
-	return (NULL);
+	*p = '\0';
+	return (dest);
 }

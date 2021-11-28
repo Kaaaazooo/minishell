@@ -1,24 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_strs.c                                        :+:      :+:    :+:   */
+/*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/27 23:10:49 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/11/23 16:46:38 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/11/23 16:48:31 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "minishell.h"
 
-char	**free_strs(char **strs, int j)
+char	*get_heredoc_name(char *dst, size_t i, size_t j)
 {
-	if (strs)
+	ft_memset(dst, 0, 256 * sizeof(char));
+	ft_strcpy(dst, ".tmp_");
+	ft_llutoa(dst + ft_strlen(dst), (long long unsigned int) i);
+	ft_llutoa(dst + ft_strlen(dst), (long long unsigned int) j);
+	return (dst);
+}
+
+void	sig_heredoc(int signo)
+{
+	if (signo == SIGINT)
 	{
-		while (j >= 0)
-			free(strs[j--]);
-		free(strs);
+		write(1, "\n", 1);
+		exit(1);
 	}
-	return (NULL);
 }

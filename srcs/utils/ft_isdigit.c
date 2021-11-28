@@ -1,24 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_strs.c                                        :+:      :+:    :+:   */
+/*   ft_isdigit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/27 23:10:49 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/11/25 22:46:36 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/11/25 22:46:37 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 
-char	**free_strs(char **strs, int j)
+int	ft_isdigit(int c)
 {
-	if (strs)
-	{
-		while (j >= 0)
-			free(strs[j--]);
-		free(strs);
-	}
-	return (NULL);
+	return ((c >= 48) && (c <= 57));
 }

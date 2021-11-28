@@ -2,20 +2,27 @@ NAME = minishell
 
 HEADER = includes
 
-OPTIONS = -I $(HEADER) -I /Users/sabrugie/.brew/opt/readline/include
-LDFLAGS = -L /Users/sabrugie/.brew/opt/readline/lib -lreadline
+OPTIONS = -I $(HEADER) -I /Users/$(USER)/.brew/opt/readline/include
+LDFLAGS = -L /Users/$(USER)/.brew/opt/readline/lib -lreadline
 LDFLAGS_LINUX = -lreadline
 CFLAGS = -Wall -Werror -Wextra $(OPTIONS)
 
 UTILS = $(addprefix utils/, ft_strlen.c ft_calloc.c ft_strcpy.c ft_strlcpy.c \
 		ft_strncmp.c ft_strcmp.c ft_strndup.c free_strs.c is_x.c ft_split.c \
-		ft_memset.c ft_memcpy.c ft_strjoin.c ft_itoa.c)
-PARSE = $(addprefix parse/, parse.c split_word.c expand.c mark_redir.c m_strlen.c)
-SIG_FUNC = $(addprefix sig_func/, sig_func.c)
+		ft_memset.c ft_memcpy.c ft_strjoin.c ft_itoa.c ft_strdup.c len_array.c \
+		ft_strchr.c ft_strncpy.c ft_isdigit.c ft_strjoin_with_quote.c \
+		check_argv.c find_pwd.c)
 
-SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) $(SIG_FUNC) main.c pipeline.c \
-	cmd.c try_error.c redir.c wait_process.c)
-TEST_SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) $(SIG_FUNC) test.c)
+BUILTINS = $(addprefix builtins/, cd.c echo.c export.c unset.c \
+		pwd.c exit.c env.c sorted_env.c ft_error_builtins.c)
+
+PARSE = $(addprefix parse/, parse.c quote_is_closed.c split_word.c expand.c \
+		merge_env.c mark_redir.c m_strlen.c)
+
+SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) $(BUILTINS) main.c shlvl.c \
+	   pipeline.c cmd.c try_error.c redir.c heredoc_utils.c heredoc.c \
+	   wait_process.c env.c pipe_and_dup.c)
+TEST_SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) test.c)
 
 CC = gcc
 

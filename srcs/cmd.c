@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/06 17:18:33 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/28 17:53:15 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,25 +77,26 @@ char	*joinpath_to_file(char *path, char *filename)
 	return (file);
 }
 
-int	exec_cmd(t_cmd cmd, char **env)
+int	exec_cmd(t_cmd cmd)
 {
 	char	*tmp;
 	char	**paths;
 	size_t	i;
 
-	handle_redir(cmd);
-	paths = ft_split(getenv("PATH"), ':');
+	if (try_builtin(cmd))
+		exit(g_sh.status);
+	paths = ft_split(ft_getenv("PATH"), ':');
 	if (paths == NULL)
-		exit(errno + 127);
+		exit(errno + 128);
 	if (is_path(cmd.av[0]) || **paths == 0)
-		if (try_exec(*paths, cmd.av[0], cmd.av, env))
-			exit(errno + 127);
+		if (try_exec(*paths, cmd.av[0], cmd.av))
+			exit(errno + 128);
 	i = SIZE_MAX;
 	while (paths[++i])
 	{
 		tmp = joinpath_to_file(paths[i], *(cmd.av));
-		if (tmp == NULL || try_exec(paths[i], tmp, cmd.av, env))
-			exit((int)(uint8_t)(errno + 127));
+		if (tmp == NULL || try_exec(paths[i], tmp, cmd.av))
+			exit((int)(uint8_t)(errno + 128));
 		free(tmp);
 	}
 	if (!paths[i])
@@ -104,8 +105,9 @@ int	exec_cmd(t_cmd cmd, char **env)
 	exit(errno);
 }
 
-int	cmd(t_token *token, char **env)
+int	cmd(t_token *token)
 {
+	int		ret;
 	size_t	n;
 	t_token	*tmp;
 	t_cmd	*cmd;
@@ -119,5 +121,14 @@ int	cmd(t_token *token, char **env)
 			n += (tmp - 1)->flag;
 	if (get_cmd_tab(&cmd, token, n))
 		return (-1);
-	return (pipeline(token, cmd, n, env));
+	ret = heredoc(cmd);
+	if (ret)
+	{
+		clear_heredocs(cmd);
+		free_pipeline(token, cmd, NULL, NULL);
+		if (ret > 0)
+			return (0);
+		return (ret);
+	}
+	return (pipeline(token, cmd, n));
 }

@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/06 16:14:47 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/12 18:21:09 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/28 19:53:08 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ uint32_t	count_words(char *buf)
 			}
 			++buf;
 		}
-		if (*buf == 0)
-			break ;
 		++count;
 		while (*buf && ((!is_metachar(buf)) || buf < end_quote))
 			quoted(buf++, &end_quote);
@@ -106,8 +104,6 @@ char	**split_word(char ***dst, char *s)
 		while (*s && s > quoted(s, &end_quote) && is_metachar(s) == BLANK)
 			s++;
 		i = 0;
-		if (*s == 0)
-			break ;
 		while (s[i] && (&s[i] < quoted(&s[i], &end_quote)
 				|| is_metachar(&s[i]) != BLANK))
 			if (incr_index(&s[i++], &end_quote, &i))

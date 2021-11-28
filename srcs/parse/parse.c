@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:59:15 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/12 19:04:39 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/28 19:53:09 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,13 @@ char	*m_str_to_str(t_m_char *m_str)
 	return (str);
 }
 
-size_t	mark_quoted(t_m_char **marked, char *word, size_t i, uint8_t flag)
+ssize_t	mark_quoted(t_m_char **marked, char *word, ssize_t i, uint8_t flag)
 {
-	size_t	j;
-
-	j = 1;
-	while (word[j] && word[j] != *word)
-		++j;
-	if (word[j] == 0)
-		return (++i);
+	if (!quote_is_closed(word))
+	{
+		free(*marked);
+		return (-1);
+	}
 	(*marked)[i].c = *(word)++;
 	if (!((*marked)[i].flag & M_QUOTED) &&
 			!((*marked)[i].flag & M_D_QUOTED))
@@ -80,7 +78,7 @@ size_t	mark_quoted(t_m_char **marked, char *word, size_t i, uint8_t flag)
 int	mark_expand(char ***word, t_token **token)
 {
 	size_t		i;
-	size_t		j;
+	ssize_t		j;
 	t_m_char	*m_str;
 
 	i = SIZE_MAX;
@@ -94,8 +92,10 @@ int	mark_expand(char ***word, t_token **token)
 		{
 			if (m_str[j].c == '\'')
 				j = mark_quoted(&m_str, &(*word)[i][j], j, M_QUOTED);
-			if (m_str[j].c == '\"')
+			else if (m_str[j].c == '\"')
 				j = mark_quoted(&m_str, &(*word)[i][j], j, M_D_QUOTED);
+			if (j < 0)
+				return (-1);
 			++j;
 		}
 		j = expansion(&(*token)[i], &m_str, is_metachar((*word)[i]));
@@ -108,26 +108,24 @@ t_token	*parse(char *buf)
 {
 	char	**word;
 	t_token	*token;
-	size_t	i;
+	int		i;
 
-	errno = 0;
 	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
-	if (word == NULL)
-		return (NULL);
 	token = ft_calloc(count_words(buf) + 1, sizeof(t_token));
 	if (token == NULL || word == NULL)
 	{
 		free(word);
 		return (NULL);
 	}
-	split_word(&word, buf);
-	i = mark_expand(&word, &token);
-	if (i || mark_redir(&token))
+	word = split_word(&word, buf);
+	if (word == NULL || mark_expand(&word, &token) || mark_redir(&token))
 	{
+		i = 0;
 		while (token[i].str)
 			free(token[i++].str);
 		free(token);
 		token = NULL;
+		printf("ici\n");
 	}
 	free_strs(word, count_words(buf));
 	return (token);

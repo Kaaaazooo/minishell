@@ -1,24 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_strs.c                                        :+:      :+:    :+:   */
+/*   quote_is_closed.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/27 23:10:49 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/11/20 15:51:16 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/11/20 15:51:29 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "minishell.h"
 
-char	**free_strs(char **strs, int j)
+int	quote_is_closed(char *word)
 {
-	if (strs)
-	{
-		while (j >= 0)
-			free(strs[j--]);
-		free(strs);
-	}
-	return (NULL);
+	size_t	j;
+	char	error[64];
+
+	j = 1;
+	while (word[j])
+		if (word[j++] == *word)
+			return (1);
+	ft_memset(error, 0, sizeof(char));
+	ft_strcpy(error, "unexpected newline while looking for matching `");
+	ft_strlcpy(error + ft_strlen(error), word, 2);
+	ft_strcpy(error + ft_strlen(error), "'");
+	minishell_error("minishell", error, NULL);
+	return (0);
 }

@@ -1,18 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sig_func.h                                         :+:      :+:    :+:   */
+/*   find_pwd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/22 16:11:44 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/09/22 16:19:05 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
+/*   Updated: 2021/10/12 15:45:05 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SIG_FUNC_H
-# define SIG_FUNC_H
+#include "utils.h"
 
-void	handle_sigtstp(int sig);
+int	find_pwd(char **env)
+{
+	int	i;
 
-#endif
+	i = 0;
+	while (env[i] && ft_strncmp(env[i], "PWD", 3))
+		i++;
+	if (!env[i])
+		return (-1);
+	return (i);
+}

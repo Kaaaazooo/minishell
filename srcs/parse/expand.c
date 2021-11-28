@@ -6,39 +6,11 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:59:15 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/10/12 19:04:39 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/28 19:53:07 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	merge_env(t_m_char **m_str, char *env, size_t *i, size_t j)
-{
-	t_m_char	*new;
-	size_t		n;
-
-	if (env)
-		n = m_strlen(*m_str) + ft_strlen(env) - j;
-	else
-		n = m_strlen(*m_str) - j;
-	new = ft_calloc(n, sizeof(t_m_char));
-	if (new == NULL)
-		return (-1);
-	n = 0;
-	while ((*m_str)[n].c && n < *i - 1)
-	{
-		new[n] = (*m_str)[n];
-		++n;
-	}
-	if (env)
-		while (*env)
-			new[n++].c = *env++;
-	while ((*m_str)[*i + j].c)
-		new[n++] = (*m_str)[*i + j++];
-	free(*m_str);
-	*m_str = new;
-	return (0);
-}
 
 int	expand_ret(t_m_char **m_str, size_t *i)
 {
@@ -52,32 +24,47 @@ int	expand_ret(t_m_char **m_str, size_t *i)
 	return (0);
 }
 
+int	get_envname(t_m_char **m_str, size_t *i, size_t *j)
+{
+	*j = 0;
+	if ((*m_str)[*i].c >= '0' && (*m_str)[*i].c <= '9')
+		*j = 1;
+	else if (ft_isalpha((*m_str)[*i].c) || (*m_str)[*i].c == '_')
+	{
+		while ((*m_str)[*i + (*j)++].c)
+			if (!ft_isalnum((*m_str)[*i + *j].c) && (*m_str)[*i + *j].c != '_')
+				break ;
+	}
+	else if (!(*m_str)[*i].c || (*m_str)[*i].c == '$'
+		|| (*m_str)[*i].flag & M_QU_END
+		|| (*m_str)[*i].flag & M_QU_END)
+		return (1);
+	return (0);
+}
+
 int	expand(t_m_char **m_str, size_t *i)
 {
 	size_t	j;
 	char	tmp;
 	char	*str;
-	char	*env;
+	char	*env_var;
 
-	j = 0;
 	if ((*m_str)[*i].c == '?')
 		return (expand_ret(m_str, i));
-	if (ft_isalpha((*m_str)[*i + j].c) || (*m_str)[*i + j].c == '_')
-		while ((*m_str)[*i + ++j].c)
-			if (!ft_isalnum((*m_str)[*i + j].c) && (*m_str)[*i + j].c != '_')
-				break ;
+	if (get_envname(m_str, i, &j))
+		return (0);
 	tmp = (*m_str)[*i + j].c;
 	(*m_str)[*i + j].c = 0;
 	str = m_str_to_str(*m_str + *i);
 	if (str == NULL)
 		return (-1);
-	env = getenv(str);
+	env_var = ft_getenv(str);
 	free(str);
 	(*m_str)[*i + j].c = tmp;
-	if (merge_env(m_str, env, i, j))
+	if (merge_env(m_str, env_var, i, j))
 		return (-1);
-	if (env)
-		*i += ft_strlen(env) - 1;
+	if (env_var)
+		*i += ft_strlen(env_var) - 1;
 	return (0);
 }
 

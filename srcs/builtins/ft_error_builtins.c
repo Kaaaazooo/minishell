@@ -1,24 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_strs.c                                        :+:      :+:    :+:   */
+/*   ft_error_builtins.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: moakouda <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/12 15:44:49 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/27 23:10:49 by sabrugie         ###   ########.fr       */
+/*   Created: 2021/11/27 22:25:53 by moakouda          #+#    #+#             */
+/*   Updated: 2021/11/28 12:55:58 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "minishell.h"
 
-char	**free_strs(char **strs, int j)
+int	ft_error_malloc(void)
 {
-	if (strs)
-	{
-		while (j >= 0)
-			free(strs[j--]);
-		free(strs);
-	}
-	return (NULL);
+	perror("minishell");
+	return (1);
+}
+
+int	ft_free_tab_malloc(char **new_env, int i)
+{
+	free_strs(new_env, i);
+	return (ft_error_malloc());
 }
