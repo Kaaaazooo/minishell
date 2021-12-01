@@ -40,6 +40,7 @@
 # define M_QU_END 2
 # define M_QUOTED 4
 # define M_D_QUOTED 8
+# define METACHAR 16
 
 typedef struct s_shell
 {
@@ -72,15 +73,17 @@ int			get_shlvl(char *shlvl);
 void		shltermios(int ac, char **av, struct termios *t);
 
 t_token		*parse(char *line);
-char		**split_word(char ***dst, char *s);
-uint32_t	count_words(char *buf);
+int			split_word(t_token **token, t_m_char *s);
+//uint32_t	count_words(char *buf);
 int			mark_redir(t_token **token);
-char		*quoted(char *buf, char **end_quote);
 int			quote_is_closed(char *word);
+void		remove_quote(t_m_char **m_str);
 uint8_t		is_metachar(char *str);
-int			expansion(t_token *token, t_m_char **m_str, uint8_t metachar);
+uint8_t		m_is_metachar(t_m_char *m_str);
+int			expansion(t_m_char **m_str);
 int			expand(t_m_char **m_str, size_t *i);
 int			merge_env(t_m_char **m_str, char *env_var, size_t *i, size_t j);
+
 char		*m_str_to_str(t_m_char *m_str);
 t_m_char	*str_to_m_str(char *str);
 size_t		m_strlen(t_m_char *m_str);

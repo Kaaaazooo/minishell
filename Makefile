@@ -17,7 +17,7 @@ BUILTINS = $(addprefix builtins/, cd.c echo.c export.c unset.c \
 		pwd.c exit.c env.c sorted_env.c ft_error_builtins.c)
 
 PARSE = $(addprefix parse/, parse.c quote_is_closed.c split_word.c expand.c \
-		merge_env.c mark_redir.c m_strlen.c)
+		merge_env.c mark_redir.c m_strlen.c m_str_conversions.c)
 
 SRCS = $(addprefix srcs/, $(UTILS) $(PARSE) $(BUILTINS) main.c shlvl.c \
 	   pipeline.c cmd.c try_error.c redir.c heredoc_utils.c heredoc.c \

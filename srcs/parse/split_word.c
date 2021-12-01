@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/06 16:14:47 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 19:53:08 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/27 23:10:08 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,61 +29,45 @@ uint8_t	is_metachar(char *str)
 	return (0);
 }
 
-char	*quoted(char *buf, char **end_quote)
-{
-	char	c;
-
-	if (*buf != '\'' && *buf != '"')
-		return (*end_quote);
-	if (*end_quote >= buf)
-		return (*end_quote);
-	c = *buf++;
-	while (*buf && *buf != c)
-		++buf;
-	*end_quote = buf;
-	return (*end_quote);
-}
-
-uint32_t	count_words(char *buf)
+uint32_t	count_words(t_m_char *s)
 {
 	uint32_t	count;
-	char		*end_quote;
 
-	end_quote = NULL;
 	count = 0;
-	while (*buf)
+	while (s->c)
 	{
-		while (*buf && is_metachar(buf) && buf > end_quote)
+		while (s->c && m_is_metachar(s) && !(s->flag & 13))
 		{
-			if (buf >= end_quote)
+			if (!(s->flag & 13))
 			{
-				if (is_metachar(buf) == G_GREAT || is_metachar(buf) == L_LESS)
-					++buf;
-				if (is_metachar(buf) != BLANK)
+				if (m_is_metachar(s) == G_GREAT || m_is_metachar(s) == L_LESS)
+					++s;
+				if (m_is_metachar(s) != BLANK)
 					++count;
 			}
-			++buf;
+			++s;
 		}
-		++count;
-		while (*buf && ((!is_metachar(buf)) || buf < end_quote))
-			quoted(buf++, &end_quote);
+		if (s->c)
+			++count;
+		while (s->c && (!(m_is_metachar(s)) || s->flag & 13))
+			++s;
 	}
 	return (count);
 }
 
-int	incr_index(char *s, char **end_quote, uint32_t *i)
+int	incr_index(t_m_char *s, uint32_t *i)
 {
 	int	ret;
 
 	ret = 0;
-	if (s > quoted(s, end_quote))
+	if (!(s->flag & 13))
 	{
-		if (is_metachar(s) == G_GREAT || is_metachar(s) == L_LESS)
+		if (m_is_metachar(s) == G_GREAT || m_is_metachar(s) == L_LESS)
 			ret = 2;
-		else if (is_metachar(s))
+		else if (m_is_metachar(s))
 			ret = 1;
-		else if (s[1] && is_metachar(s + 1)
-			&& is_metachar(s + 1) != BLANK)
+		else if (s[1].c && m_is_metachar(s + 1)
+			&& m_is_metachar(s + 1) != BLANK)
 			ret = 1;
 	}
 	if (ret == 2)
@@ -91,27 +75,54 @@ int	incr_index(char *s, char **end_quote, uint32_t *i)
 	return (ret);
 }
 
-char	**split_word(char ***dst, char *s)
+int	add_word(t_token **token, t_m_char *s, uint32_t i, uint32_t j)
+{
+	char		*str;
+	char		tmp;
+	uint32_t	n;
+
+	tmp = s[i].c;
+	s[i].c = 0;
+	if (m_is_metachar(s) && m_is_metachar(s) != BLANK)
+		(*token)[j].flag = 1;
+	remove_quote(&s);
+	str = m_str_to_str(s);
+	if (str == NULL)
+	{
+		n = 0;
+		while ((*token)[n].str)
+			free((*token)[n++].str);
+		free(*token);
+		*token = NULL;
+		return (-1);
+	}
+	(*token)[j].str = str;
+	s[i].c = tmp;
+	return (0);
+}
+
+int	split_word(t_token **token, t_m_char *s)
 {
 	uint32_t	i;
 	uint32_t	j;
-	char		*end_quote;
 
 	j = 0;
-	end_quote = NULL;
-	while (*s)
+	*token = ft_calloc(count_words(s) + 2, sizeof(**token));
+	if (*token == NULL)
+		return (-1);
+	while (s->c)
 	{
-		while (*s && s > quoted(s, &end_quote) && is_metachar(s) == BLANK)
+		while (s->c && !(s->flag & 15) && m_is_metachar(s) == BLANK)
 			s++;
 		i = 0;
-		while (s[i] && (&s[i] < quoted(&s[i], &end_quote)
-				|| is_metachar(&s[i]) != BLANK))
-			if (incr_index(&s[i++], &end_quote, &i))
+		if (s->c == 0)
+			break ;
+		while (s[i].c && (s[i].flag & 13 || m_is_metachar(&s[i]) != BLANK))
+			if (incr_index(&s[i++], &i))
 				break ;
-		(*dst)[j++] = ft_strndup(s, i);
-		if (!(*dst)[j - 1])
-			return (free_strs((*dst), (int)(j - 1)));
+		if (add_word(token, s, i, j++))
+			return (-1);
 		s += i;
 	}
-	return (*dst);
+	return (0);
 }

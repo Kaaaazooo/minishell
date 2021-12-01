@@ -39,3 +39,10 @@ int	merge_env(t_m_char **m_str, char *env_var, size_t *i, size_t j)
 	*m_str = new;
 	return (0);
 }
+//	printf("new :\n[");
+//	for (size_t a = 0; new[a].c; a++)
+//		printf("%c", new[a].c);
+//	printf("]\n[");
+//	for (size_t a = 0; new[a].c; a++)
+//		printf("%d", new[a].flag);
+//	printf("]\n");

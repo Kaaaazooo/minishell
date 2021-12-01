@@ -26,7 +26,7 @@ void	dup_fd(t_cmd *cmd, size_t i, size_t n, int *p)
 {
 	signal(SIGQUIT, SIG_DFL);
 	if (i)
-		dup2(p[(i - 1) * 2], 0);
+		dup2(p[(i - 1) *2], 0);
 	if (cmd[i + 1].av || cmd[i + 1].av)
 		dup2(p[i * 2 + 1], 1);
 	close_pipes(p, n);

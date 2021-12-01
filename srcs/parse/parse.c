@@ -6,56 +6,33 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:59:15 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 19:53:09 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/27 23:12:28 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_m_char	*str_to_m_str(char *str)
+uint8_t	m_is_metachar(t_m_char *m_str)
 {
-	size_t		i;
-	t_m_char	*m_str;
-
-	m_str = ft_calloc(ft_strlen(str) + 1, sizeof(t_m_char));
-	if (m_str == NULL)
-		return (NULL);
-	i = 0;
-	while (str[i])
-	{
-		m_str[i].c = str[i];
-		++i;
-	}
-	return (m_str);
-}
-
-char	*m_str_to_str(t_m_char *m_str)
-{
-	size_t	i;
-	char	*str;
-
-	i = 0;
-	while (m_str[i].c)
-		++i;
-	str = ft_calloc(i + 1, sizeof(char));
-	if (str == NULL)
-		return (NULL);
-	i = 0;
-	while (m_str[i].c)
-	{
-		str[i] = m_str[i].c;
-		++i;
-	}
-	return (str);
+	if (m_str[0].c == '>' && m_str[1].c == '>')
+		return (G_GREAT);
+	if (m_str[0].c == '<' && m_str[1].c == '<')
+		return (L_LESS);
+	if (m_str[0].c == '<')
+		return (GREAT);
+	if (m_str[0].c == '>')
+		return (LESS);
+	if (m_str[0].c == '|')
+		return (PIPE);
+	if (m_str[0].c == ' ' || m_str[0].c == '\t')
+		return (BLANK);
+	return (0);
 }
 
 ssize_t	mark_quoted(t_m_char **marked, char *word, ssize_t i, uint8_t flag)
 {
 	if (!quote_is_closed(word))
-	{
-		free(*marked);
 		return (-1);
-	}
 	(*marked)[i].c = *(word)++;
 	if (!((*marked)[i].flag & M_QUOTED) &&
 			!((*marked)[i].flag & M_D_QUOTED))
@@ -75,58 +52,47 @@ ssize_t	mark_quoted(t_m_char **marked, char *word, ssize_t i, uint8_t flag)
 	return (i);
 }
 
-int	mark_expand(char ***word, t_token **token)
+int	mark_expand(char *buf, t_m_char **m_buf, t_token **token)
 {
-	size_t		i;
-	ssize_t		j;
-	t_m_char	*m_str;
+	ssize_t	i;
 
-	i = SIZE_MAX;
-	j = 0;
-	while (j == 0 && (*word)[++i])
+	i = 0;
+	while (buf[i])
 	{
-		m_str = str_to_m_str((*word)[i]);
-		if (m_str == NULL)
+		if ((*m_buf)[i].c == '\'')
+			i = mark_quoted(m_buf, &(buf[i]), i, M_QUOTED);
+		else if ((*m_buf)[i].c == '\"')
+			i = mark_quoted(m_buf, &(buf[i]), i, M_D_QUOTED);
+		if (i < 0)
 			return (-1);
-		while ((*word)[i][j])
-		{
-			if (m_str[j].c == '\'')
-				j = mark_quoted(&m_str, &(*word)[i][j], j, M_QUOTED);
-			else if (m_str[j].c == '\"')
-				j = mark_quoted(&m_str, &(*word)[i][j], j, M_D_QUOTED);
-			if (j < 0)
-				return (-1);
-			++j;
-		}
-		j = expansion(&(*token)[i], &m_str, is_metachar((*word)[i]));
-		free(m_str);
+		++i;
 	}
-	return (j);
+	if (expansion(m_buf))
+		return (-1);
+	if (split_word(token, (*m_buf)))
+		return (-1);
+	return (0);
 }
 
 t_token	*parse(char *buf)
 {
-	char	**word;
-	t_token	*token;
-	int		i;
+	t_m_char	*m_buf;
+	t_token		*token;
+	size_t		i;
 
-	word = ft_calloc(count_words(buf) + 1, sizeof(char *));
-	token = ft_calloc(count_words(buf) + 1, sizeof(t_token));
-	if (token == NULL || word == NULL)
-	{
-		free(word);
+	m_buf = str_to_m_str(buf);
+	if (m_buf == NULL)
 		return (NULL);
-	}
-	word = split_word(&word, buf);
-	if (word == NULL || mark_expand(&word, &token) || mark_redir(&token))
+	if (mark_expand(buf, &m_buf, &token))
+		token = NULL;
+	free(m_buf);
+	if (token && mark_redir(&token))
 	{
 		i = 0;
-		while (token[i].str)
+		while (token && token[i].str)
 			free(token[i++].str);
 		free(token);
 		token = NULL;
-		printf("ici\n");
 	}
-	free_strs(word, count_words(buf));
 	return (token);
 }

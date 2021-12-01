@@ -42,10 +42,8 @@ int	ft_remove(int index)
 int	ft_do_unset(const char *argv, int *not_valid)
 {
 	int		i;
-	char	**new_env;
 
 	i = -1;
-	new_env = NULL;
 	while (g_sh.env[++i])
 	{
 		if (!ft_strncmp(argv, g_sh.env[i], ft_strlen((char *)argv)))

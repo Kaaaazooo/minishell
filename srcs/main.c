@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 20:03:06 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/28 11:56:56 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,18 +44,6 @@ void	signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-int	check_buf(char *buf)
-{
-	size_t	i;
-
-	if (ft_strlen(buf) == 0)
-		return (1);
-	i = 0;
-	while (buf[i] && buf[i] == ' ')
-		++i;
-	return (buf[i] == 0);
-}
-
 int	minishell_loop(void)
 {
 	char		*buf;
@@ -66,22 +54,22 @@ int	minishell_loop(void)
 	{
 		buf = readline("minishell$ ");
 		if (buf == NULL)
-		{
-			printf("exit\n");
 			break ;
-		}
-		if (check_buf(buf))
+		if (ft_strlen(buf) == 0)
 		{
 			free(buf);
 			continue ;
 		}
 		add_history(buf);
 		token = parse(buf);
-		if (cmd(token))
+		if (token && token->str == NULL)
+			free(token);
+		else if (cmd(token))
 			ret_error(token);
 		free(buf);
 	}
 	free(buf);
+	printf("exit\n");
 	return (0);
 }
 

@@ -70,13 +70,7 @@ static long long unsigned int	llu_get_size(long long unsigned int n)
 	nb = 0;
 	if (n == 0)
 		return (1);
-	if (n < 0)
-	{
-		len++;
-		nb = n * -1;
-	}
-	else
-		nb = n;
+	nb = n;
 	while (nb > 0)
 	{
 		nb = nb / 10;

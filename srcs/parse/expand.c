@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:59:15 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 19:53:07 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/11/19 14:07:10 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int	get_envname(t_m_char **m_str, size_t *i, size_t *j)
 				break ;
 	}
 	else if (!(*m_str)[*i].c || (*m_str)[*i].c == '$'
+		|| m_is_metachar(*m_str + *i)
 		|| (*m_str)[*i].flag & M_QU_END
 		|| (*m_str)[*i].flag & M_QU_END)
 		return (1);
@@ -65,6 +66,8 @@ int	expand(t_m_char **m_str, size_t *i)
 		return (-1);
 	if (env_var)
 		*i += ft_strlen(env_var) - 1;
+	else
+		*i -= 1;
 	return (0);
 }
 
@@ -87,7 +90,7 @@ void	remove_quote(t_m_char **m_str)
 	(*m_str)[j].flag = 0;
 }
 
-int	expansion(t_token *token, t_m_char **m_str, uint8_t metachar)
+int	expansion(t_m_char **m_str)
 {
 	size_t	i;
 
@@ -103,11 +106,5 @@ int	expansion(t_token *token, t_m_char **m_str, uint8_t metachar)
 		else
 			++i;
 	}
-	remove_quote(m_str);
-	if (metachar)
-		token->flag = 1;
-	token->str = m_str_to_str((*m_str));
-	if (token->str == NULL)
-		return (-1);
 	return (0);
 }
