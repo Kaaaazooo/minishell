@@ -11,13 +11,16 @@
 /* ************************************************************************** */
 
 #include "utils.h"
+#include <stdio.h>
 
-int	check_argv(char *str)
+int	check_argv(char *str, int mode)
 {
-	if (ft_isdigit(*str))
+	if (ft_isdigit(*str) || *str == '+' || *str == '=')
 		return (1);
 	while (*str != '\0')
 	{
+		if (mode && (*str == '=' || (*str == '+' && *(str + 1) == '=')))
+			return (0);
 		if (!ft_isalnum(*str) && *str != '_')
 			return (1);
 		str++;

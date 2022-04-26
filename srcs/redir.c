@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 03:05:54 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/12/01 17:24:08 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,22 @@ int	redir(int dst, char *file, int flags, mode_t mode)
 	int	error;
 
 	fd = open(file, flags, mode);
+	error = 0;
 	if (fd < 0)
 	{
 		error = errno;
 		minishell_error("minishell", file, strerror(errno));
 		errno = error;
-		return (errno);
 	}
-	if (dup2(fd, dst) < 0)
+	if (error == 0 && dup2(fd, dst) < 0)
 	{
 		error = errno;
 		minishell_error("minishell", file, strerror(errno));
 		errno = error;
-		return (errno);
 	}
-	return (0);
+	if (fd > 0)
+		close(fd);
+	return (error);
 }
 
 int	handle_redir(t_cmd cmd, size_t i)

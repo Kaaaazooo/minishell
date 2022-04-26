@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:08:28 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 13:06:43 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/12/01 20:43:51 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ int			split_word(t_token **token, t_m_char *s);
 int			mark_redir(t_token **token);
 int			quote_is_closed(char *word);
 void		remove_quote(t_m_char **m_str);
+ssize_t		mark_quoted(t_m_char **marked, char *word, ssize_t i, uint8_t flag);
 uint8_t		is_metachar(char *str);
 uint8_t		m_is_metachar(t_m_char *m_str);
 int			expansion(t_m_char **m_str);
@@ -129,9 +130,11 @@ void		ft_exit(const char **argv);
 int			ft_export(const char **argv);
 int			ft_pwd(const char **argv);
 int			ft_unset(const char **argv);
-int			ft_error_malloc(void);
-int			ft_free_tab_malloc(char **new_env, int i);
+int			ft_error_malloc(char *str);
+int			ft_free_tab_malloc(char **new_env, int i, const char *argv);
 int			print_env_sorted(void);
+void		not_valid_identifier(const char *argv, int *not_valid);
+const char	*ft_concatenate(const char *argv, int *concatenate, char **tmp);
 
 extern t_sh	g_sh;
 

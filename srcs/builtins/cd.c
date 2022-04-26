@@ -53,11 +53,11 @@ int	check_oldpwd(void)
 		{
 			pwd = get_content_pwd();
 			if (!pwd)
-				return (ft_error_malloc());
+				return (ft_error_malloc(NULL));
 			tmp = ft_strjoin("OLDPWD=", pwd);
 			free(pwd);
 			if (!tmp)
-				return (ft_error_malloc());
+				return (ft_error_malloc(NULL));
 			free(g_sh.env[i]);
 			g_sh.env[i] = tmp;
 			return (0);
@@ -79,11 +79,11 @@ int	update_pwd(void)
 	{
 		pwd = getcwd(tmp, 32768);
 		if (!pwd)
-			return (ft_error_malloc());
+			return (ft_error_malloc(NULL));
 		tmp = ft_strjoin("PWD=", pwd);
 		free(pwd);
 		if (!tmp)
-			return (ft_error_malloc());
+			return (ft_error_malloc(NULL));
 		free(g_sh.env[i]);
 		g_sh.env[i] = tmp;
 	}
@@ -103,7 +103,7 @@ int	reset_oldpwd(void)
 		return (0);
 	new_env = ft_strdup("OLDPWD=");
 	if (!new_env)
-		return (ft_error_malloc());
+		return (ft_error_malloc(NULL));
 	free(g_sh.env[i]);
 	g_sh.env[i] = new_env;
 	return (0);

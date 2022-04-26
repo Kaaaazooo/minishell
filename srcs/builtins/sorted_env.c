@@ -66,7 +66,7 @@ int	print_env_sorted(void)
 	i = -1;
 	cpy_env = (char **)malloc(sizeof(char *) * (len_array(g_sh.env) + 1));
 	if (!cpy_env)
-		return (ft_error_malloc());
+		return (ft_error_malloc(NULL));
 	while (g_sh.env[++i])
 		cpy_env[i] = g_sh.env[i];
 	cpy_env[i] = NULL;
@@ -76,7 +76,7 @@ int	print_env_sorted(void)
 	{
 		new_env = ft_strjoin_with_quote("declare -x ", cpy_env[i]);
 		if (!new_env)
-			return (ft_error_malloc());
+			return (ft_error_malloc(NULL));
 		write(1, new_env, ft_strlen(new_env));
 		write(1, "\n", 1);
 		free(new_env);

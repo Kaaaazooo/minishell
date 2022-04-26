@@ -20,7 +20,7 @@ int	ft_remove(int index)
 	i = -1;
 	new_env = (char **)malloc(sizeof(char *) * (len_array(g_sh.env)));
 	if (!new_env)
-		return (ft_error_malloc());
+		return (ft_error_malloc(NULL));
 	while (++i < len_array(g_sh.env) - 1)
 	{
 		if (i < index)
@@ -30,7 +30,7 @@ int	ft_remove(int index)
 		if (!new_env[i])
 		{
 			free_strs(g_sh.env, i);
-			return (ft_error_malloc());
+			return (ft_error_malloc(NULL));
 		}
 	}
 	free_strs(g_sh.env, i);
@@ -42,8 +42,10 @@ int	ft_remove(int index)
 int	ft_do_unset(const char *argv, int *not_valid)
 {
 	int		i;
+	char	**new_env;
 
 	i = -1;
+	new_env = NULL;
 	while (g_sh.env[++i])
 	{
 		if (!ft_strncmp(argv, g_sh.env[i], ft_strlen((char *)argv)))
@@ -52,7 +54,7 @@ int	ft_do_unset(const char *argv, int *not_valid)
 				return (1);
 			break ;
 		}
-		else if (check_argv((char *) argv))
+		else if (check_argv((char *) argv, 0))
 		{
 			write(2, "minishell: unset: `", 19);
 			write(2, argv, ft_strlen((char *)argv));

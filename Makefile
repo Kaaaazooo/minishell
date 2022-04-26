@@ -11,7 +11,7 @@ UTILS = $(addprefix utils/, ft_strlen.c ft_calloc.c ft_strcpy.c ft_strlcpy.c \
 		ft_strncmp.c ft_strcmp.c ft_strndup.c free_strs.c is_x.c ft_split.c \
 		ft_memset.c ft_memcpy.c ft_strjoin.c ft_itoa.c ft_strdup.c len_array.c \
 		ft_strchr.c ft_strncpy.c ft_isdigit.c ft_strjoin_with_quote.c \
-		check_argv.c find_pwd.c)
+		check_argv.c find_pwd.c ft_strstr.c)
 
 BUILTINS = $(addprefix builtins/, cd.c echo.c export.c unset.c \
 		pwd.c exit.c env.c sorted_env.c ft_error_builtins.c)

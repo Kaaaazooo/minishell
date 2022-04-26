@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 11:56:56 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/12/01 22:48:57 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ t_sh	g_sh;
 
 void	ret_error(t_token *token)
 {
+	size_t	i;
+
 	if (errno)
 	{
 		perror("minishell");
@@ -23,6 +25,10 @@ void	ret_error(t_token *token)
 	}
 	else
 		g_sh.status = 258;
+	i = 0;
+	if (token)
+		while (token[i].str)
+			free(token[i++].str);
 	free(token);
 }
 
@@ -69,7 +75,7 @@ int	minishell_loop(void)
 		free(buf);
 	}
 	free(buf);
-	printf("exit\n");
+	write(2, "exit\n", 5);
 	return (0);
 }
 

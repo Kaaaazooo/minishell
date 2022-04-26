@@ -6,7 +6,7 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:07:59 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/28 17:55:00 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/12/01 19:06:46 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,9 @@ int	free_pipeline(t_token *token, t_cmd *cmd, int *p, pid_t *pid)
 	while (token[i].str)
 		free(token[i++].str);
 	free(token);
+	token = NULL;
 	free(cmd);
+	cmd = NULL;
 	free(p);
 	free(pid);
 	return (0);
@@ -79,6 +81,9 @@ int	no_pipe_builtin(t_token *token, t_cmd *cmd)
 	close(1);
 	dup2(s[0], 0);
 	dup2(s[1], 1);
+	close(s[0]);
+	close(s[1]);
+	clear_heredocs(cmd);
 	free_pipeline(token, cmd, NULL, NULL);
 	return (1);
 }

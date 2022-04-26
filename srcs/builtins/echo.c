@@ -12,20 +12,40 @@
 
 #include "minishell.h"
 
-int	ft_echo(const char **argv)
+int	ft_is_flag_n(const char *argv)
 {
 	int	i;
 
 	i = 0;
-	if (argv[1] != NULL && !ft_strcmp(argv[1], "-n"))
-		i++;
-	while (argv[++i])
+	if (argv[i] == '-' && argv[i + 1] == 'n')
+	{
+		i = 1;
+		while (argv[i] == 'n')
+			i++;
+		if (!argv[i])
+			return (1);
+	}
+	return (0);
+}
+
+int	ft_echo(const char **argv)
+{
+	int	i;
+	int	n;
+
+	i = 0;
+	n = 0;
+	while (n == i && argv[++i])
+		if (ft_is_flag_n(argv[i]))
+			n++;
+	while (argv[i])
 	{
 		write(1, argv[i], ft_strlen((char *)argv[i]));
 		if (argv[i + 1])
 			write(1, " ", 1);
+		i++;
 	}
-	if (argv[1] != NULL && !ft_strcmp(argv[1], "-n"))
+	if (n)
 		return (0);
 	write(1, "\n", 1);
 	return (0);

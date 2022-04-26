@@ -6,11 +6,26 @@
 /*   By: sabrugie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/19 14:01:06 by sabrugie          #+#    #+#             */
-/*   Updated: 2021/11/19 14:01:22 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/12/01 22:29:44 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	add_var(t_m_char **dst, char *env_var, size_t *n, uint8_t flag)
+{
+	if (env_var)
+	{
+		while (*env_var)
+		{
+			(*dst)[*n].c = *env_var++;
+			if (((*dst)[*n].c != ' ' && (*dst)[*n].c != '\t')
+				|| flag & 15)
+				(*dst)[*n].flag = M_QUOTED;
+			++(*n);
+		}
+	}
+}
 
 int	merge_env(t_m_char **m_str, char *env_var, size_t *i, size_t j)
 {
@@ -30,19 +45,10 @@ int	merge_env(t_m_char **m_str, char *env_var, size_t *i, size_t j)
 		new[n] = (*m_str)[n];
 		++n;
 	}
-	if (env_var)
-		while (*env_var)
-			new[n++].c = *env_var++;
+	add_var(&new, env_var, &n, (*m_str)[n].flag);
 	while ((*m_str)[*i + j].c)
 		new[n++] = (*m_str)[*i + j++];
 	free(*m_str);
 	*m_str = new;
 	return (0);
 }
-//	printf("new :\n[");
-//	for (size_t a = 0; new[a].c; a++)
-//		printf("%c", new[a].c);
-//	printf("]\n[");
-//	for (size_t a = 0; new[a].c; a++)
-//		printf("%d", new[a].flag);
-//	printf("]\n");

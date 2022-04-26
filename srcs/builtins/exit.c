@@ -6,7 +6,7 @@
 /*   By: moakouda <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 20:59:04 by moakouda          #+#    #+#             */
-/*   Updated: 2021/11/28 13:11:38 by sabrugie         ###   ########.fr       */
+/*   Updated: 2021/12/01 22:39:46 by sabrugie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,21 +82,21 @@ void	ft_exit(const char **argv)
 	nb = 0;
 	if (argv[1])
 	{
-		if (argv[2])
-		{
-			minishell_error("minishell", "exit", "too many arguments");
-			g_sh.status = 1;
-			return ;
-		}
 		nb = ft_atoi(argv[1], &not_num);
 		if (!not_num)
 			g_sh.status = nb % 256;
 		else
 			g_sh.status = 255;
 	}
-	write(1, "exit\n", 5);
+	write(2, "exit\n", 5);
 	if (not_num)
 		minishell_error("minishell: exit", (char *)argv[1],
 			"numeric argument required");
+	else if (argv[1] && argv[2])
+	{
+		minishell_error("minishell", "exit", "too many arguments");
+		g_sh.status = 1;
+		return ;
+	}
 	exit(g_sh.status);
 }
